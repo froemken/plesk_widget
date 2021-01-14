@@ -1,0 +1,8 @@
+# cat=basic; type=string; label=Plesk host: Insert without scheme, port or path
+host =
+# cat=basic; type=int; label=Plesk port: Plesk default port is 8443
+port = 8443
+# cat=basic; type=string; label=Plesk username
+username =
+# cat=basic; type=string; label=Plesk password
+password =

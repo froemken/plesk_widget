@@ -3,7 +3,7 @@
 declare(strict_types = 1);
 
 /*
- * This file is part of the package stefanfroemken/mysql-widget.
+ * This file is part of the package stefanfroemken/plesk-widget.
  *
  * For the full copyright and license information, please read the
  * LICENSE file that was distributed with this source code.
@@ -11,13 +11,22 @@ declare(strict_types = 1);
 
 namespace StefanFroemken\PleskWidget\DataProvider;
 
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use StefanFroemken\PleskWidget\Configuration\ExtConf;
 use TYPO3\CMS\Dashboard\WidgetApi;
 use TYPO3\CMS\Dashboard\Widgets\ChartDataProviderInterface;
 
 class PleskDataProvider implements ChartDataProviderInterface
 {
+    /**
+     * @var ExtConf
+     */
+    protected $extConf;
+
+    public function __construct(ExtConf $extConf)
+    {
+        $this->extConf = $extConf;
+    }
+
     public function getChartData(): array
     {
         return [
@@ -38,8 +47,8 @@ class PleskDataProvider implements ChartDataProviderInterface
 
     protected function getWebSpaceStatus()
     {
-        $client = new \PleskX\Api\Client('900410.jweiland-hosting.de');
-        $client->setCredentials('froemkenl', 'vfM!BiX6V2$5^cDP');
+        $client = new \PleskX\Api\Client($this->extConf->getHost(), $this->extConf->getPort());
+        $client->setCredentials($this->extConf->getUsername(), $this->extConf->getPassword());
 
         //$client->customer()->getAll();
 
@@ -65,5 +74,10 @@ class PleskDataProvider implements ChartDataProviderInterface
             2 => 40
         ];*/
         return $client->customer()->getAll();
+    }
+
+    protected function getLimits()
+    {
+        //$client->webspace()->getLimits(null, null)
     }
 }
