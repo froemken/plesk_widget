@@ -1,0 +1,23 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  StefanFroemken\PleskWidget\:
+    resource: '../Classes/*'
+
+  dashboard.widget.plesk.webspace:
+    class: 'StefanFroemken\PleskWidget\Widgets\Webspace'
+    arguments:
+      $view: '@dashboard.views.widget'
+      $dataProvider: '@StefanFroemken\PleskWidget\DataProvider\PleskDataProvider'
+    tags:
+      - name: dashboard.widget
+        identifier: 'plesk.webspace'
+        groupNames: 'systemInfo'
+        title: 'Plesk Webspace'
+        description: 'Show used and available diskspace'
+        iconIdentifier: 'content-widget-rss'
+        height: 'medium'
+        width: 'small'

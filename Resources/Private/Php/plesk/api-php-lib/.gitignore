@@ -1,0 +1,8 @@
+
+# vendor
+/vendor/
+
+# tests
+/phpunit.xml
+/.phpunit.result.cache
+/php/tests/node_modules/
