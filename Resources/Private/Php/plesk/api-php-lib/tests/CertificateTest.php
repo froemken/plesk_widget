@@ -1,6 +1,5 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
-
+// Copyright 1999-2019. Plesk International GmbH.
 namespace PleskXTest;
 
 class CertificateTest extends TestCase
@@ -14,7 +13,7 @@ class CertificateTest extends TestCase
             'location' => 'Novosibirsk',
             'company' => 'Plesk',
             'email' => 'info@plesk.com',
-            'name' => 'plesk.com',
+            'name' => 'plesk.com'
         ]);
         $this->assertGreaterThan(0, strlen($certificate->request));
         $this->assertStringStartsWith('-----BEGIN CERTIFICATE REQUEST-----', $certificate->request);

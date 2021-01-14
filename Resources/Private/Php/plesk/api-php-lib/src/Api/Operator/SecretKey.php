@@ -1,17 +1,16 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Operator;
-
 use PleskX\Api\Struct\SecretKey as Struct;
 
 class SecretKey extends \PleskX\Api\Operator
 {
+
     protected $_wrapperTag = 'secret_key';
 
     /**
      * @param string $ipAddress
-     *
      * @return string
      */
     public function create($ipAddress)
@@ -19,13 +18,11 @@ class SecretKey extends \PleskX\Api\Operator
         $packet = $this->_client->getPacket();
         $packet->addChild($this->_wrapperTag)->addChild('create')->addChild('ip_address', $ipAddress);
         $response = $this->_client->request($packet);
-
-        return (string) $response->key;
+        return (string)$response->key;
     }
 
     /**
      * @param string $keyId
-     *
      * @return bool
      */
     public function delete($keyId)
@@ -35,13 +32,11 @@ class SecretKey extends \PleskX\Api\Operator
 
     /**
      * @param string $keyId
-     *
      * @return Struct\Info
      */
     public function get($keyId)
     {
         $items = $this->_get($keyId);
-
         return reset($items);
     }
 
@@ -55,7 +50,6 @@ class SecretKey extends \PleskX\Api\Operator
 
     /**
      * @param string|null $keyId
-     *
      * @return Struct\Info[]
      */
     public function _get($keyId = null)
@@ -77,4 +71,5 @@ class SecretKey extends \PleskX\Api\Operator
 
         return $items;
     }
+
 }

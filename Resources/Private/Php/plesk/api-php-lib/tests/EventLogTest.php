@@ -1,6 +1,5 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
-
+// Copyright 1999-2019. Plesk International GmbH.
 namespace PleskXTest;
 
 class EventLogTest extends TestCase
@@ -21,6 +20,7 @@ class EventLogTest extends TestCase
 
         $event = reset($events);
         $this->assertGreaterThan(0, $event->time);
+        $this->assertGreaterThan(0, strlen($event->user));
     }
 
     public function testGetLastId()

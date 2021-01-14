@@ -1,8 +1,7 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Operator;
-
 use PleskX\Api\Struct\Site as Struct;
 
 class Site extends \PleskX\Api\Operator
@@ -11,7 +10,6 @@ class Site extends \PleskX\Api\Operator
 
     /**
      * @param array $properties
-     *
      * @return Struct\Info
      */
     public function create(array $properties)
@@ -38,14 +36,12 @@ class Site extends \PleskX\Api\Operator
         }
 
         $response = $this->_client->request($packet);
-
         return new Struct\Info($response);
     }
 
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return bool
      */
     public function delete($field, $value)
@@ -55,21 +51,18 @@ class Site extends \PleskX\Api\Operator
 
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return Struct\GeneralInfo
      */
     public function get($field, $value)
     {
         $items = $this->_getItems(Struct\GeneralInfo::class, 'gen_info', $field, $value);
-
         return reset($items);
     }
 
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return Struct\HostingInfo|null
      */
     public function getHosting($field, $value)
@@ -77,7 +70,6 @@ class Site extends \PleskX\Api\Operator
         $items = $this->_getItems(Struct\HostingInfo::class, 'hosting', $field, $value, function ($node) {
             return isset($node->vrt_hst);
         });
-
         return empty($items) ? null : reset($items);
     }
 
@@ -88,4 +80,5 @@ class Site extends \PleskX\Api\Operator
     {
         return $this->_getItems(Struct\GeneralInfo::class, 'gen_info');
     }
+
 }

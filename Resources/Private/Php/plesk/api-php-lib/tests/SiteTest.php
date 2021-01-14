@@ -1,28 +1,25 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
-
+// Copyright 1999-2019. Plesk International GmbH.
 namespace PleskXTest;
-
-use PleskXTest\Utility\KeyLimitChecker;
 
 class SiteTest extends TestCase
 {
     /** @var \PleskX\Api\Struct\Webspace\Info */
     private static $webspace;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
         static::$webspace = static::_createWebspace();
     }
 
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
 
         $keyInfo = static::$_client->server()->getKeyInfo();
 
-        if (!KeyLimitChecker::checkByType($keyInfo, KeyLimitChecker::LIMIT_DOMAINS, 2)) {
+        if ((int)$keyInfo['lim_dom'] < 2) {
             $this->markTestSkipped('License does not allow to create more than 1 domain.');
         }
     }
@@ -33,7 +30,6 @@ class SiteTest extends TestCase
             'name' => $name,
             'webspace-id' => static::$webspace->id,
         ], $properties);
-
         return static::$_client->site()->create($properties);
     }
 

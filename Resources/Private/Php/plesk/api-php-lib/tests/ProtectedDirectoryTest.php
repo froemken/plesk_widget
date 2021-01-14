@@ -1,16 +1,13 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
-
+// Copyright 1999-2019. Plesk International GmbH.
 namespace PleskXTest;
-
-use PleskXTest\Utility\PasswordProvider;
 
 class ProtectedDirectoryTest extends TestCase
 {
     /** @var \PleskX\Api\Struct\Webspace\Info */
     private static $webspace;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
         static::$webspace = static::_createWebspace();
@@ -26,11 +23,12 @@ class ProtectedDirectoryTest extends TestCase
         static::$_client->protectedDirectory()->delete('id', $protectedDirectory->id);
     }
 
+    /**
+     * @expectedException \PleskX\Api\Exception
+     * @expectedExceptionCode 1019
+     */
     public function testAddInvalidDirectory()
     {
-        $this->expectException(\PleskX\Api\Exception::class);
-        $this->expectExceptionCode(1019);
-
         static::$_client->protectedDirectory()->add('', static::$webspace->id);
     }
 
@@ -52,11 +50,12 @@ class ProtectedDirectoryTest extends TestCase
         static::$_client->protectedDirectory()->delete('id', $protectedDirectory->id);
     }
 
+    /**
+     * @expectedException \PleskX\Api\Exception
+     * @expectedExceptionCode 1013
+     */
     public function testGetUnknownDirectory()
     {
-        $this->expectException(\PleskX\Api\Exception::class);
-        $this->expectExceptionCode(1013);
-
         $nonExistentDirectoryId = 99999999;
         static::$_client->protectedDirectory()->get('id', $nonExistentDirectoryId);
     }
@@ -65,7 +64,7 @@ class ProtectedDirectoryTest extends TestCase
     {
         $protectedDirectory = static::$_client->protectedDirectory()->add('/', static::$webspace->id);
 
-        $user = static::$_client->protectedDirectory()->addUser($protectedDirectory, 'john', PasswordProvider::STRONG_PASSWORD);
+        $user = static::$_client->protectedDirectory()->addUser($protectedDirectory, 'john', 'secret');
         $this->assertGreaterThan(0, $user->id);
 
         static::$_client->protectedDirectory()->delete('id', $protectedDirectory->id);
@@ -75,10 +74,11 @@ class ProtectedDirectoryTest extends TestCase
     {
         $protectedDirectory = static::$_client->protectedDirectory()->add('/', static::$webspace->id);
 
-        $user = static::$_client->protectedDirectory()->addUser($protectedDirectory, 'john', PasswordProvider::STRONG_PASSWORD);
+        $user = static::$_client->protectedDirectory()->addUser($protectedDirectory, 'john', 'secret');
         $result = static::$_client->protectedDirectory()->deleteUser('id', $user->id);
         $this->assertTrue($result);
 
         static::$_client->protectedDirectory()->delete('id', $protectedDirectory->id);
     }
+
 }

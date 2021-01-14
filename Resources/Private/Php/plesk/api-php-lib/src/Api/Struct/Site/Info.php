@@ -1,11 +1,11 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Struct\Site;
 
 class Info extends \PleskX\Api\Struct
 {
-    /** @var int */
+    /** @var integer */
     public $id;
 
     /** @var string */

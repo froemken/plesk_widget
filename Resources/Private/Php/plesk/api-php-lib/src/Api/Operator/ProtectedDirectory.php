@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Operator;
 
@@ -7,13 +7,13 @@ use PleskX\Api\Struct\ProtectedDirectory as Struct;
 
 class ProtectedDirectory extends \PleskX\Api\Operator
 {
+
     protected $_wrapperTag = 'protected-dir';
 
     /**
      * @param string $name
-     * @param int $siteId
+     * @param integer $siteId
      * @param string $header
-     *
      * @return Struct\Info
      */
     public function add($name, $siteId, $header = '')
@@ -30,8 +30,7 @@ class ProtectedDirectory extends \PleskX\Api\Operator
 
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return bool
      */
     public function delete($field, $value)
@@ -41,21 +40,18 @@ class ProtectedDirectory extends \PleskX\Api\Operator
 
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return Struct\DataInfo|false
      */
     public function get($field, $value)
     {
         $items = $this->getAll($field, $value);
-
         return reset($items);
     }
 
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return Struct\DataInfo[]
      */
     public function getAll($field, $value)
@@ -65,7 +61,6 @@ class ProtectedDirectory extends \PleskX\Api\Operator
         foreach ($response->xpath('//result/data') as $xmlResult) {
             $items[] = new Struct\DataInfo($xmlResult);
         }
-
         return $items;
     }
 
@@ -73,7 +68,6 @@ class ProtectedDirectory extends \PleskX\Api\Operator
      * @param Struct\Info $protectedDirectory
      * @param string $login
      * @param string $password
-     *
      * @return Struct\UserInfo
      */
     public function addUser($protectedDirectory, $login, $password)
@@ -90,8 +84,7 @@ class ProtectedDirectory extends \PleskX\Api\Operator
 
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return bool
      */
     public function deleteUser($field, $value)
@@ -103,7 +96,6 @@ class ProtectedDirectory extends \PleskX\Api\Operator
      * @param $command
      * @param $field
      * @param $value
-     *
      * @return \PleskX\Api\XmlResponse
      */
     private function _get($command, $field, $value)
@@ -117,7 +109,7 @@ class ProtectedDirectory extends \PleskX\Api\Operator
         }
 
         $response = $this->_client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
-
         return $response;
     }
+
 }

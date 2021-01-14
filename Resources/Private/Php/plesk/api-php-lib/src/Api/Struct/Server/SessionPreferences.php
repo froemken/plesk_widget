@@ -1,11 +1,11 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Struct\Server;
 
 class SessionPreferences extends \PleskX\Api\Struct
 {
-    /** @var int */
+    /** @var integer */
     public $loginTimeout;
 
     public function __construct($apiResponse)

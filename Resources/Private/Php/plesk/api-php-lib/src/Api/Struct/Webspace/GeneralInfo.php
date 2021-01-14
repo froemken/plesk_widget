@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Struct\Webspace;
 
@@ -11,7 +11,7 @@ class GeneralInfo extends \PleskX\Api\Struct
     /** @var string */
     public $guid;
 
-    /** @var int */
+    /** @var integer */
     public $realSize;
 
     public function __construct($apiResponse)

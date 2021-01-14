@@ -1,18 +1,17 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Operator;
-
 use PleskX\Api\Struct\Mail as Struct;
 
 class Mail extends \PleskX\Api\Operator
 {
+
     /**
      * @param string $name
-     * @param int $siteId
-     * @param bool $mailbox
+     * @param integer $siteId
+     * @param boolean $mailbox
      * @param string $password
-     *
      * @return Struct\Info
      */
     public function create($name, $siteId, $mailbox = false, $password = '')
@@ -32,15 +31,13 @@ class Mail extends \PleskX\Api\Operator
         }
 
         $response = $this->_client->request($packet);
-
         return new Struct\Info($response->mailname);
     }
 
     /**
      * @param string $field
-     * @param int|string $value
-     * @param int $siteId
-     *
+     * @param integer|string $value
+     * @param integer $siteId
      * @return bool
      */
     public function delete($field, $value, $siteId)
@@ -50,7 +47,7 @@ class Mail extends \PleskX\Api\Operator
         $filter->addChild('site-id', $siteId);
         $filter->addChild($field, $value);
         $response = $this->_client->request($packet);
-
-        return 'ok' === (string) $response->status;
+        return 'ok' === (string)$response->status;
     }
+
 }

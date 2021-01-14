@@ -1,6 +1,5 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
-
+// Copyright 1999-2019. Plesk International GmbH.
 namespace PleskXTest;
 
 class ServicePlanTest extends TestCase
@@ -15,7 +14,7 @@ class ServicePlanTest extends TestCase
     public function testGetAll()
     {
         $servicePlans = static::$_client->servicePlan()->getAll();
-        $this->assertIsArray($servicePlans);
+        $this->assertInternalType('array', $servicePlans);
         $this->assertGreaterThan(0, count($servicePlans));
         $this->assertNotEmpty($servicePlans[0]->name);
     }

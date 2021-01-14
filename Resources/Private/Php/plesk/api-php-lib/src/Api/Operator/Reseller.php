@@ -1,15 +1,14 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Operator;
-
 use PleskX\Api\Struct\Reseller as Struct;
 
 class Reseller extends \PleskX\Api\Operator
 {
+
     /**
      * @param array $properties
-     *
      * @return Struct\Info
      */
     public function create($properties)
@@ -22,14 +21,12 @@ class Reseller extends \PleskX\Api\Operator
         }
 
         $response = $this->_client->request($packet);
-
         return new Struct\Info($response);
     }
 
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return bool
      */
     public function delete($field, $value)
@@ -37,23 +34,21 @@ class Reseller extends \PleskX\Api\Operator
         return $this->_delete($field, $value);
     }
 
+
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return Struct\GeneralInfo
      */
     public function get($field, $value)
     {
         $items = $this->getAll($field, $value);
-
         return reset($items);
     }
 
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return Struct\GeneralInfo[]
      */
     public function getAll($field = null, $value = null)
@@ -75,10 +70,13 @@ class Reseller extends \PleskX\Api\Operator
         $items = [];
         foreach ($response->xpath('//result') as $xmlResult) {
             $item = new Struct\GeneralInfo($xmlResult->data);
-            $item->id = (int) $xmlResult->id;
+            $item->id = (int)$xmlResult->id;
             $items[] = $item;
         }
 
         return $items;
     }
+
+
+
 }

@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Struct\EventLog;
 
@@ -8,7 +8,7 @@ class Event extends \PleskX\Api\Struct
     /** @var string */
     public $type;
 
-    /** @var int */
+    /** @var integer */
     public $time;
 
     /** @var string */

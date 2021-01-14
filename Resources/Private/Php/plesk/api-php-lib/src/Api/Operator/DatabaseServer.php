@@ -1,12 +1,13 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Operator;
-
 use PleskX\Api\Struct\DatabaseServer as Struct;
+
 
 class DatabaseServer extends \PleskX\Api\Operator
 {
+
     protected $_wrapperTag = 'db_server';
 
     /**
@@ -15,20 +16,17 @@ class DatabaseServer extends \PleskX\Api\Operator
     public function getSupportedTypes()
     {
         $response = $this->request('get-supported-types');
-
-        return (array) $response->type;
+        return (array)$response->type;
     }
 
     /**
      * @param string $field
-     * @param int|string $value
-     *
+     * @param integer|string $value
      * @return Struct\Info
      */
     public function get($field, $value)
     {
         $items = $this->_get($field, $value);
-
         return reset($items);
     }
 
@@ -42,8 +40,7 @@ class DatabaseServer extends \PleskX\Api\Operator
 
     /**
      * @param string|null $field
-     * @param int|string|null $value
-     *
+     * @param integer|string|null $value
      * @return Struct\Info|Struct\Info[]
      */
     private function _get($field = null, $value = null)
@@ -61,10 +58,11 @@ class DatabaseServer extends \PleskX\Api\Operator
         $items = [];
         foreach ($response->xpath('//result') as $xmlResult) {
             $item = new Struct\Info($xmlResult->data);
-            $item->id = (int) $xmlResult->id;
+            $item->id = (int)$xmlResult->id;
             $items[] = $item;
         }
 
         return $items;
     }
+
 }

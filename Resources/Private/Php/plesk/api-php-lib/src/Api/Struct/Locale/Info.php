@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Struct\Locale;
 
@@ -19,7 +19,7 @@ class Info extends \PleskX\Api\Struct
         $this->_initScalarProperties($apiResponse, [
             'id',
             ['lang' => 'language'],
-            'country',
+            'country'
         ]);
     }
 }

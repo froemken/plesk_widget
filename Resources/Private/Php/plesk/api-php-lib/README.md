@@ -1,7 +1,6 @@
 ## PHP library for Plesk XML-RPC API
 
-[![Build Status](https://travis-ci.com/plesk/api-php-lib.svg?branch=master)](https://travis-ci.com/plesk/api-php-lib) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/plesk/api-php-lib/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/plesk/api-php-lib/?branch=master)
-[![StyleCI](https://styleci.io/repos/26514840/shield?branch=master)](https://styleci.io/repos/26514840)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/plesk/api-php-lib/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/plesk/api-php-lib/?branch=master)
 
 PHP object-oriented library for Plesk XML-RPC API.
 
@@ -49,18 +48,18 @@ One the possible ways to become familiar with the library is to check the unit t
 
 To run the unit tests use the following command:
 
-`REMOTE_HOST=your-plesk-host.dom REMOTE_PASSWORD=password composer test`
+`REMOTE_HOST=your-plesk-host.dom REMOTE_PASSWORD=password ./vendor/bin/phpunit`
 
 To use custom port one can provide a URL (e.g. for Docker container):
 
-`REMOTE_URL=https://your-plesk-host.dom:port REMOTE_PASSWORD=password composer test`
+`REMOTE_URL=https://your-plesk-host.dom:port REMOTE_PASSWORD=password ./vendor/bin/phpunit`
 
 One more way to run tests is to use Docker:
 
 `docker-compose run tests`
 
-## Continuous Testing
+## Using Grunt for Continuous Testing
 
-During active development it could be more convenient to run tests in continuous manner. Here is the way how to achieve it:
-
-`REMOTE_URL=https://your-plesk-host.dom:port REMOTE_PASSWORD=password composer test:watch`
+* Install Node.js
+* Install dependencies via `npm install` command
+* Run `REMOTE_HOST=your-plesk-host.dom REMOTE_PASSWORD=password grunt watch:test`

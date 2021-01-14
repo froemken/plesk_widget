@@ -1,16 +1,13 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
-
+// Copyright 1999-2019. Plesk International GmbH.
 namespace PleskXTest;
-
-use PleskXTest\Utility\PasswordProvider;
 
 class DatabaseTest extends TestCase
 {
     /** @var \PleskX\Api\Struct\Webspace\Info */
     private static $webspace;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
         static::$webspace = static::_createWebspace();
@@ -38,7 +35,7 @@ class DatabaseTest extends TestCase
         $user = $this->_createUser([
             'db-id' => $database->id,
             'login' => 'test_user1',
-            'password' => PasswordProvider::STRONG_PASSWORD,
+            'password' => 'setup1Q',
         ]);
         static::$_client->database()->deleteUser('id', $user->id);
         static::$_client->database()->delete('id', $database->id);
@@ -55,12 +52,12 @@ class DatabaseTest extends TestCase
         $user = $this->_createUser([
             'db-id' => $database->id,
             'login' => 'test_user1',
-            'password' => PasswordProvider::STRONG_PASSWORD,
+            'password' => 'setup1Q',
         ]);
         $updatedUser = static::$_client->database()->updateUser([
             'id' => $user->id,
             'login' => 'test_user2',
-            'password' => PasswordProvider::STRONG_PASSWORD,
+            'password' => 'setup2Q',
         ]);
         $this->assertEquals(true, $updatedUser);
         static::$_client->database()->deleteUser('id', $user->id);
@@ -121,7 +118,7 @@ class DatabaseTest extends TestCase
         $user = $this->_createUser([
             'db-id' => $database->id,
             'login' => 'test_user1',
-            'password' => PasswordProvider::STRONG_PASSWORD,
+            'password' => 'setup1Q',
         ]);
 
         $dbUser = static::$_client->database()->getUser('id', $user->id);
@@ -149,19 +146,19 @@ class DatabaseTest extends TestCase
         $user1 = $this->_createUser([
             'db-id' => $db1->id,
             'login' => 'test_user1',
-            'password' => PasswordProvider::STRONG_PASSWORD,
+            'password' => 'setup1Q',
         ]);
 
         $user2 = $this->_createUser([
             'db-id' => $db1->id,
             'login' => 'test_user2',
-            'password' => PasswordProvider::STRONG_PASSWORD,
+            'password' => 'setup1Q',
         ]);
 
         $user3 = $this->_createUser([
             'db-id' => $db2->id,
             'login' => 'test_user3',
-            'password' => PasswordProvider::STRONG_PASSWORD,
+            'password' => 'setup1Q',
         ]);
 
         $dbUsers = static::$_client->database()->getAllUsers('db-id', $db1->id);
@@ -199,7 +196,7 @@ class DatabaseTest extends TestCase
         $user = $this->_createUser([
             'db-id' => $database->id,
             'login' => 'test_user1',
-            'password' => PasswordProvider::STRONG_PASSWORD,
+            'password' => 'setup1Q',
         ]);
 
         $result = static::$_client->database()->deleteUser('id', $user->id);
@@ -209,7 +206,6 @@ class DatabaseTest extends TestCase
 
     /**
      * @param array $params
-     *
      * @return \PleskX\Api\Struct\Database\Info
      */
     private function _createDatabase(array $params)
@@ -223,7 +219,6 @@ class DatabaseTest extends TestCase
 
     /**
      * @param array $params
-     *
      * @return \PleskX\Api\Struct\Database\UserInfo
      */
     private function _createUser(array $params)

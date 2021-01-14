@@ -1,6 +1,5 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
-
+// Copyright 1999-2019. Plesk International GmbH.
 namespace PleskXTest;
 
 class DnsTemplateTest extends TestCase
@@ -10,7 +9,7 @@ class DnsTemplateTest extends TestCase
      */
     private static $_isDnsSupported;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
 
@@ -18,7 +17,7 @@ class DnsTemplateTest extends TestCase
         static::$_isDnsSupported = $serviceStates['dns'] && ('running' == $serviceStates['dns']['state']);
     }
 
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
 
@@ -34,7 +33,7 @@ class DnsTemplateTest extends TestCase
             'host' => 'test.create',
             'value' => 'value',
         ]);
-        $this->assertIsInt($dns->id);
+        $this->assertInternalType('integer', $dns->id);
         $this->assertGreaterThan(0, $dns->id);
         $this->assertEquals(0, $dns->siteId);
         $this->assertEquals(0, $dns->siteAliasId);

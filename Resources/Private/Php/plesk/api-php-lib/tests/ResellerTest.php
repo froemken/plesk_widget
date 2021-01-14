@@ -1,28 +1,19 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
-
+// Copyright 1999-2019. Plesk International GmbH.
 namespace PleskXTest;
-
-use PleskXTest\Utility\KeyLimitChecker;
-use PleskXTest\Utility\PasswordProvider;
 
 class ResellerTest extends TestCase
 {
-    private $_resellerProperties;
-
-    public function setUp(): void
-    {
-        $this->_resellerProperties = [
-            'pname' => 'John Reseller',
-            'login' => 'reseller-unit-test',
-            'passwd' => PasswordProvider::STRONG_PASSWORD,
-        ];
-    }
+    private $_resellerProperties = [
+        'pname' => 'John Reseller',
+        'login' => 'reseller-unit-test',
+        'passwd' => 'simple-password',
+    ];
 
     public function testCreate()
     {
         $reseller = static::$_client->reseller()->create($this->_resellerProperties);
-        $this->assertIsInt($reseller->id);
+        $this->assertInternalType('integer', $reseller->id);
         $this->assertGreaterThan(0, $reseller->id);
 
         static::$_client->reseller()->delete('id', $reseller->id);
@@ -50,19 +41,19 @@ class ResellerTest extends TestCase
     {
         $keyInfo = static::$_client->server()->getKeyInfo();
 
-        if (!KeyLimitChecker::checkByType($keyInfo, KeyLimitChecker::LIMIT_RESELLERS, 2)) {
+        if ((int)$keyInfo['lim_cl'] < 2) {
             $this->markTestSkipped('License does not allow to create more than 1 reseller.');
         }
 
         static::$_client->reseller()->create([
             'pname' => 'John Reseller',
             'login' => 'reseller-a',
-            'passwd' => PasswordProvider::STRONG_PASSWORD,
+            'passwd' => 'simple-password',
         ]);
         static::$_client->reseller()->create([
             'pname' => 'Mike Reseller',
             'login' => 'reseller-b',
-            'passwd' => PasswordProvider::STRONG_PASSWORD,
+            'passwd' => 'simple-password',
         ]);
 
         $resellersInfo = static::$_client->reseller()->getAll();

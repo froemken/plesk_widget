@@ -1,32 +1,23 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
-
+// Copyright 1999-2019. Plesk International GmbH.
 namespace PleskXTest;
-
-use PleskXTest\Utility\KeyLimitChecker;
-use PleskXTest\Utility\PasswordProvider;
 
 class CustomerTest extends TestCase
 {
-    private $_customerProperties;
-
-    public function setUp(): void
-    {
-        $this->_customerProperties = [
-            'cname' => 'Plesk',
-            'pname' => 'John Smith',
-            'login' => 'john-unit-test',
-            'passwd' => PasswordProvider::STRONG_PASSWORD,
-            'email' => 'john@smith.com',
-            'external-id' => 'link:12345',
-            'description' => 'Good guy',
-        ];
-    }
+    private $_customerProperties = [
+        'cname' => 'Plesk',
+        'pname' => 'John Smith',
+        'login' => 'john-unit-test',
+        'passwd' => 'simple-password',
+        'email' => 'john@smith.com',
+        'external-id' => 'link:12345',
+        'description' => 'Good guy',
+    ];
 
     public function testCreate()
     {
         $customer = static::$_client->customer()->create($this->_customerProperties);
-        $this->assertIsInt($customer->id);
+        $this->assertInternalType('integer', $customer->id);
         $this->assertGreaterThan(0, $customer->id);
 
         static::$_client->customer()->delete('id', $customer->id);
@@ -57,19 +48,19 @@ class CustomerTest extends TestCase
     {
         $keyInfo = static::$_client->server()->getKeyInfo();
 
-        if (!KeyLimitChecker::checkByType($keyInfo, KeyLimitChecker::LIMIT_CLIENTS, 2)) {
+        if ((int)$keyInfo['lim_cl'] < 2) {
             $this->markTestSkipped('License does not allow to create more than 1 customer.');
         }
 
         static::$_client->customer()->create([
             'pname' => 'John Smith',
             'login' => 'customer-a',
-            'passwd' => PasswordProvider::STRONG_PASSWORD,
+            'passwd' => 'simple-password',
         ]);
         static::$_client->customer()->create([
             'pname' => 'Mike Black',
             'login' => 'customer-b',
-            'passwd' => PasswordProvider::STRONG_PASSWORD,
+            'passwd' => 'simple-password',
         ]);
 
         $customersInfo = static::$_client->customer()->getAll();

@@ -1,6 +1,5 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
-
+// Copyright 1999-2019. Plesk International GmbH.
 namespace PleskXTest;
 
 class UiTest extends TestCase
@@ -14,7 +13,7 @@ class UiTest extends TestCase
     public function testGetNavigation()
     {
         $navigation = static::$_client->ui()->getNavigation();
-        $this->assertIsArray($navigation);
+        $this->assertInternalType('array', $navigation);
         $this->assertGreaterThan(0, count($navigation));
         $this->assertArrayHasKey('general', $navigation);
         $this->assertArrayHasKey('hosting', $navigation);

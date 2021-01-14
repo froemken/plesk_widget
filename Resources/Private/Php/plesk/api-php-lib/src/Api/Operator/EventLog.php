@@ -1,12 +1,12 @@
 <?php
-// Copyright 1999-2020. Plesk International GmbH.
+// Copyright 1999-2019. Plesk International GmbH.
 
 namespace PleskX\Api\Operator;
-
 use PleskX\Api\Struct\EventLog as Struct;
 
 class EventLog extends \PleskX\Api\Operator
 {
+
     protected $_wrapperTag = 'event_log';
 
     /**
@@ -44,6 +44,7 @@ class EventLog extends \PleskX\Api\Operator
      */
     public function getLastId()
     {
-        return (int) $this->request('get-last-id')->getValue('id');
+        return (int)$this->request('get-last-id')->getValue('id');
     }
+
 }

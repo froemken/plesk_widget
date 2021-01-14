@@ -50,7 +50,8 @@ class Webspace implements WidgetInterface, EventDataInterface, AdditionalCssInte
     {
         $this->view->setTemplate('Widget/Webspace');
         $this->view->assignMultiple([
-            'configuration' => $this->configuration
+            'configuration' => $this->configuration,
+            'customer' => $this->dataProvider->getLimits()
         ]);
 
         return $this->view->render();
