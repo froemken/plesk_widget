@@ -12,7 +12,6 @@ declare(strict_types = 1);
 namespace StefanFroemken\PleskWidget\DataProvider;
 
 use PleskX\Api\Client;
-use PleskX\Api\XmlResponse;
 use StefanFroemken\PleskWidget\Configuration\ExtConf;
 use StefanFroemken\PleskWidget\Plesk\Webspace\Limits;
 use TYPO3\CMS\Dashboard\WidgetApi;
@@ -56,6 +55,13 @@ class PleskDataProvider implements ChartDataProviderInterface
         ];
     }
 
+    public function getHosting(): array
+    {
+        $hostingInfo = $this->pleskClient->site()->getHosting(null, null);
+
+        return $hostingInfo->properties;
+    }
+
     public function getCustomer(): \PleskX\Api\Struct\Customer\GeneralInfo
     {
         $customers = $this->pleskClient->customer()->getAll();
@@ -66,21 +72,56 @@ class PleskDataProvider implements ChartDataProviderInterface
     protected function getWebSpaceStatus(): array
     {
         $diskUsage = $this->getDiskUsage();
-        $httpUsage = $diskUsage->httpdocs + $diskUsage->httpsdocs;
-        $logUsage = $diskUsage->logs;
-        $dbUsage = $diskUsage->dbases;
-        $diskSpace = $this->getLimit('disk_space')->value;
+        $diskSpace = (int)$this->getLimit('disk_space')->value;
+
         return [
-            0 => $httpUsage,
-            1 => $dbUsage,
-            2 => $logUsage,
-            3 => $diskSpace - $httpUsage - $dbUsage - $logUsage
+            0 => $this->calcDiskUsage(
+                ($diskUsage->httpdocs + $diskUsage->httpsdocs),
+                $diskSpace
+            ),
+            1 => $this->calcDiskUsage(
+                $diskUsage->dbases,
+                $diskSpace
+            ),
+            2 => $this->calcDiskUsage(
+                $diskUsage->logs,
+                $diskSpace
+            ),
+            3 => $this->calcDiskUsage(
+                ($diskSpace - $diskUsage->httpdocs + $diskUsage->httpsdocs + $diskUsage->dbases + $diskUsage->logs),
+                $diskSpace
+            )
         ];
+    }
+
+    protected function calcDiskUsage(int $part, int $total = 0): float
+    {
+        if ($this->extConf->getDiskUsageType() === '%' && $total !== 0) {
+            $value = round(100 / $total * $part, 4);
+        } elseif ($this->extConf->getDiskUsageType() === 'MB') {
+            $value = round($part / 1024 / 1024, 4);
+        } elseif ($this->extConf->getDiskUsageType() === 'GB') {
+            $value = round($part / 1024 / 1024 / 1024, 4);
+        } else {
+            $value = (float)$part;
+        }
+
+        return $value;
     }
 
     protected function getLimit(string $limit): \StefanFroemken\PleskWidget\Plesk\Webspace\Limit
     {
         return $this->getLimits()->limits[$limit];
+    }
+
+    public function getLoginLink(): string
+    {
+        return sprintf(
+            '%s://%s:%d',
+            $this->pleskClient->getProtocol() ?: 'https',
+            $this->pleskClient->getHost(),
+            $this->pleskClient->getPort()
+        );
     }
 
     public function getLimits(): \StefanFroemken\PleskWidget\Plesk\Webspace\Limits
@@ -96,6 +137,23 @@ class PleskDataProvider implements ChartDataProviderInterface
             $items[] = new Limits($xmlResult->data->limits);
         }
         return $items[0];
+    }
+
+    public function getSite(): \StefanFroemken\PleskWidget\Plesk\Site
+    {
+        $packet = $this->pleskClient->getPacket();
+        $getTag = $packet->addChild('site')->addChild('get');
+        $getTag->addChild('filter');
+        $getTag->addChild('dataset')->addChild('gen_info');
+        $response = $this->pleskClient->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
+
+        $sites = [];
+        foreach ($response->xpath('//result') as $xmlResult) {
+            $site = new \StefanFroemken\PleskWidget\Plesk\Site($xmlResult);
+            $site->genInfo = new \StefanFroemken\PleskWidget\Plesk\Site\GeneralInfo($xmlResult->data->gen_info);
+            $sites[] = $site;
+        }
+        return $sites[0];
     }
 
     public function getDiskUsage(): \PleskX\Api\Struct\Webspace\DiskUsage

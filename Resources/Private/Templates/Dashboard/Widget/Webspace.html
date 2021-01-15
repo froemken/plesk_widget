@@ -5,8 +5,42 @@
 <f:layout name="Widget/Widget" />
 
 <f:section name="main">
-    <div class="widget-chart">
-        <canvas></canvas>
+    <div class="row">
+        <f:if condition="{error}">
+            <f:then>
+                <div class="col-md-12">{error}</div>
+            </f:then>
+            <f:else>
+                <div class="col-md-6">
+                    <div class="widget-chart">
+                        <canvas></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <dl>
+                        <dt>Owner</dt>
+                        <dd>{customer.personalName}</dd>
+                    </dl>
+                    <dl>
+                        <dt>IP Address</dt>
+                        <f:for each="{site.genInfo.dnsIpAddress}" as="ipAddress">
+                            <dd>{ipAddress}</dd>
+                        </f:for>
+                    </dl>
+                    <dl>
+                        <dt>Hosting</dt>
+                        <dd>PHP Handler: {hosting.php_handler_id}</dd>
+                        <dd>PHP memory: {hosting.memory_limit}</dd>
+                        <dd>PHP exec. time: {hosting.max_execution_time}</dd>
+                        <dd>PHP max. upload: {hosting.upload_max_filesize}</dd>
+                    </dl>
+                </div>
+            </f:else>
+        </f:if>
     </div>
+</f:section>
+
+<f:section name="footer">
+    <f:render partial="Widget/Button" arguments="{button: button}"/>
 </f:section>
 </html>

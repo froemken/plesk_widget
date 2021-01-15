@@ -1,3 +1,5 @@
+# cat=basic; type=options[Percent (%)=%,MegaByte (MB)=MB,GigaByte (GB)=GB]; label=Disk usage type: Show disk usage in percent or in Mega- or GigaByte?
+diskUsageType = %
 # cat=basic; type=string; label=Plesk host: Insert without scheme, port or path
 host =
 # cat=basic; type=int; label=Plesk port: Plesk default port is 8443

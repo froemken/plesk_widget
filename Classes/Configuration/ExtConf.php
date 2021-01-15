@@ -23,6 +23,11 @@ class ExtConf implements SingletonInterface
     /**
      * @var string
      */
+    protected $diskUsageType = '%';
+
+    /**
+     * @var string
+     */
     protected $host = '';
 
     /**
@@ -53,6 +58,16 @@ class ExtConf implements SingletonInterface
                 }
             }
         }
+    }
+
+    public function getDiskUsageType(): string
+    {
+        return $this->diskUsageType;
+    }
+
+    public function setDiskUsageType(string $diskUsageType): void
+    {
+        $this->diskUsageType = $diskUsageType;
     }
 
     public function getHost(): string

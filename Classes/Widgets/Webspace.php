@@ -11,9 +11,12 @@ declare(strict_types = 1);
 
 namespace StefanFroemken\PleskWidget\Widgets;
 
+use StefanFroemken\PleskWidget\Configuration\ExtConf;
 use StefanFroemken\PleskWidget\DataProvider\PleskDataProvider;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Dashboard\Widgets\AdditionalCssInterface;
 use TYPO3\CMS\Dashboard\Widgets\EventDataInterface;
+use TYPO3\CMS\Dashboard\Widgets\Provider\ButtonProvider;
 use TYPO3\CMS\Dashboard\Widgets\RequireJsModuleInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetConfigurationInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetInterface;
@@ -36,6 +39,11 @@ class Webspace implements WidgetInterface, EventDataInterface, AdditionalCssInte
      */
     private $dataProvider;
 
+    /**
+     * @var bool
+     */
+    private $hasError = false;
+
     public function __construct(
         WidgetConfigurationInterface $configuration,
         StandaloneView $view,
@@ -48,22 +56,43 @@ class Webspace implements WidgetInterface, EventDataInterface, AdditionalCssInte
 
     public function renderWidgetContent(): string
     {
+        try {
+            $variables = [
+                'configuration' => $this->configuration,
+                'customer' => $this->dataProvider->getCustomer(),
+                'hosting' => $this->dataProvider->getHosting(),
+                'site' => $this->dataProvider->getSite(),
+                'button' => $this->getButtonProvider()
+            ];
+        } catch (\Exception $e) {
+            $this->hasError = true;
+            $variables = [
+                'error' => $e->getMessage()
+            ];
+        }
+
         $this->view->setTemplate('Widget/Webspace');
-        $this->view->assignMultiple([
-            'configuration' => $this->configuration,
-            'customer' => $this->dataProvider->getLimits()
-        ]);
+        $this->view->assign('configuration', $this->configuration);
+        $this->view->assignMultiple($variables);
 
         return $this->view->render();
     }
 
     public function getEventData(): array
     {
+        $extConf = GeneralUtility::makeInstance(ExtConf::class);
+
+        if ($this->hasError) {
+            $data = '{}';
+        } else {
+            $data = $this->dataProvider->getChartData();
+        }
+
         return [
             'graphConfig' => [
                 'type' => 'doughnut',
                 'options' => [
-                    'maintainAspectRatio' => false,
+                    //'maintainAspectRatio' => false,
                     'legend' => [
                         'display' => true,
                         'position' => 'bottom'
@@ -73,12 +102,22 @@ class Webspace implements WidgetInterface, EventDataInterface, AdditionalCssInte
                     ],
                     'title' => [
                         'display' => true,
-                        'text' => 'Usage in %'
+                        'text' => 'Usage in ' . $extConf->getDiskUsageType()
                     ]
                 ],
-                'data' => $this->dataProvider->getChartData(),
+                'data' => $data,
             ],
         ];
+    }
+
+    protected function getButtonProvider(): ButtonProvider
+    {
+        return GeneralUtility::makeInstance(
+            ButtonProvider::class,
+            'Login to Plesk',
+            $this->dataProvider->getLoginLink(),
+            '_blank'
+        );
     }
 
     public function getCssFiles(): array
