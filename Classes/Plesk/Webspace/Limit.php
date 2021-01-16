@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the package stefanfroemken/plesk-widget.
@@ -27,4 +27,3 @@ class Limit extends \PleskX\Api\Struct
         ]);
     }
 }
-
