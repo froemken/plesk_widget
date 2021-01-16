@@ -5,7 +5,13 @@ of your Plesk account as widget in TYPO3 DashBoard
 
 ## 1 Features
 
-* DashBoard widget to show webspace usage
+* Show disk usage as donut chart
+* Show owner
+* Show PHP memory_limit
+* Show PHP max_execution_time
+* Show configured PHP version
+* Show ip addresses
+* Button linked to login screen of plesk
 
 ## 2 Usage
 
@@ -30,4 +36,4 @@ Download and install `plesk_widget` with the extension manager module.
 1) Visit DashBoard module
 2) Click the + icon in the lower right
 3) Choose tab system information
-4) Choose one of the Plesk widgets
+4) Choose the Plesk widget
