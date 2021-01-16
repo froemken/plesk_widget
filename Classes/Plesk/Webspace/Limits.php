@@ -29,4 +29,3 @@ class Limits extends \PleskX\Api\Struct
         }
     }
 }
-
