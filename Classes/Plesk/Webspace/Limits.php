@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the package stefanfroemken/plesk-widget.
@@ -25,7 +25,7 @@ class Limits extends \PleskX\Api\Struct
         $this->limits = [];
 
         foreach ($apiResponse->limit as $limit) {
-            $this->limits[(string) $limit->name] = new Limit($limit);
+            $this->limits[(string)$limit->name] = new Limit($limit);
         }
     }
 }
