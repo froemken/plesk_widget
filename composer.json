@@ -1,7 +1,7 @@
 {
 	"name": "stefanfroemken/plesk-widget",
 	"type": "typo3-cms-extension",
-	"description": "Shows information about your plesk based customer control center",
+	"description": "TYPO3 extension to show plesk information as widget on TYPO3 DashBoard",
 	"license": "GPL-2.0-or-later",
 	"keywords": ["typo3", "TYPO3 CMS", "plesk", "widget"],
 	"homepage": "https://www.typo3lexikon.de",
