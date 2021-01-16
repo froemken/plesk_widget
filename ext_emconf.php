@@ -19,11 +19,8 @@ $EM_CONF[$_EXTKEY] = [
         ],
     ],
     'autoload' => [
-        /*'classmap' => [
-            'Resources/Private/Php/'
-        ],*/
         'psr-4' => [
-            //'StefanFroemken\\PleskWidget\\' => 'Classes',
+            'StefanFroemken\\PleskWidget\\' => 'Classes',
             'PleskX\\' => 'Resources/Private/Php/plesk/api-php-lib/src',
         ],
     ],
