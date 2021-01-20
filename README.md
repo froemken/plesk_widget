@@ -11,7 +11,9 @@ of your Plesk account as widget in TYPO3 DashBoard
 * Show PHP max_execution_time
 * Show configured PHP version
 * Show ip addresses
-* Button linked to login screen of plesk
+* Button to Plesk (automatically login)
+  * If external IP could not be resolved, the link will fallback to
+    Plesk login screen
 
 ## 2 Usage
 
