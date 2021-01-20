@@ -20,3 +20,4 @@ your configured Plesk account.
 * Show owner
 * Show some PHP information
 * Show IP addresses
+* Button to Plesk (auto-login). On failure, button will link to plesk login screen.

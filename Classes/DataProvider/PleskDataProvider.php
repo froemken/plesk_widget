@@ -14,6 +14,7 @@ namespace StefanFroemken\PleskWidget\DataProvider;
 use PleskX\Api\Client;
 use StefanFroemken\PleskWidget\Configuration\ExtConf;
 use StefanFroemken\PleskWidget\Plesk\Webspace\Limits;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Dashboard\WidgetApi;
 use TYPO3\CMS\Dashboard\Widgets\ChartDataProviderInterface;
 
@@ -116,6 +117,20 @@ class PleskDataProvider implements ChartDataProviderInterface
 
     public function getLoginLink(): string
     {
+        // Get external IP address. Works also within DDEV/Docker containers
+        $externalIpAddress = file_get_contents("http://ipecho.net/plain");
+
+        if (GeneralUtility::validIP($externalIpAddress)) {
+            return sprintf(
+                '%s://%s:%d/enterprise/rsession_init.php?PLESKSESSID=%s&success_redirect_url=%s',
+                $this->pleskClient->getProtocol() ?: 'https',
+                $this->pleskClient->getHost(),
+                $this->pleskClient->getPort(),
+                $this->pleskClient->server()->createSession($this->extConf->getUsername(), $externalIpAddress),
+                '/smb/web/view'
+            );
+        }
+
         return sprintf(
             '%s://%s:%d',
             $this->pleskClient->getProtocol() ?: 'https',
