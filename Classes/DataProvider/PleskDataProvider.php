@@ -118,7 +118,7 @@ class PleskDataProvider implements ChartDataProviderInterface
     public function getLoginLink(): string
     {
         // Get external IP address. Works also within DDEV/Docker containers
-        $externalIpAddress = file_get_contents("http://ipecho.net/plain");
+        $externalIpAddress = file_get_contents('http://ipecho.net/plain');
 
         if (GeneralUtility::validIP($externalIpAddress)) {
             return sprintf(
