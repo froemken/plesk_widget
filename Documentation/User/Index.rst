@@ -16,4 +16,3 @@ Target group: **Editors**
 #. Switch to tab System Information
 
 #. Choose the plesk widget
-
