@@ -20,15 +20,9 @@ use TYPO3\CMS\Dashboard\Widgets\ChartDataProviderInterface;
 
 class PleskDataProvider implements ChartDataProviderInterface
 {
-    /**
-     * @var ExtConf
-     */
-    protected $extConf;
+    protected ExtConf $extConf;
 
-    /**
-     * @var Client
-     */
-    protected $pleskClient;
+    protected Client $pleskClient;
 
     public function __construct(ExtConf $extConf)
     {

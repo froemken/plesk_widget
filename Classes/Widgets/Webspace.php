@@ -24,25 +24,13 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
 
 class Webspace implements WidgetInterface, EventDataInterface, AdditionalCssInterface, RequireJsModuleInterface
 {
-    /**
-     * @var WidgetConfigurationInterface
-     */
-    private $configuration;
+    private WidgetConfigurationInterface $configuration;
 
-    /**
-     * @var StandaloneView
-     */
-    private $view;
+    private StandaloneView $view;
 
-    /**
-     * @var PleskDataProvider
-     */
-    private $dataProvider;
+    private PleskDataProvider $dataProvider;
 
-    /**
-     * @var bool
-     */
-    private $hasError = false;
+    private bool $hasError = false;
 
     public function __construct(
         WidgetConfigurationInterface $configuration,

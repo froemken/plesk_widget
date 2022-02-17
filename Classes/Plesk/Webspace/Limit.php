@@ -13,11 +13,9 @@ namespace StefanFroemken\PleskWidget\Plesk\Webspace;
 
 class Limit extends \PleskX\Api\Struct
 {
-    /** @var string */
-    public $name;
+    public string $name = '';
 
-    /** @var string */
-    public $value;
+    public string $value;
 
     public function __construct($apiResponse)
     {

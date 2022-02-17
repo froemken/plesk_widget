@@ -13,11 +13,9 @@ namespace StefanFroemken\PleskWidget\Plesk\Webspace;
 
 class Limits extends \PleskX\Api\Struct
 {
-    /** @var string */
-    public $overuse;
+    public string $overuse;
 
-    /** @var array */
-    public $limits;
+    public array $limits;
 
     public function __construct($apiResponse)
     {

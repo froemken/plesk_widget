@@ -20,30 +20,15 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ExtConf implements SingletonInterface
 {
-    /**
-     * @var string
-     */
-    protected $diskUsageType = '%';
+    protected string $diskUsageType = '%';
 
-    /**
-     * @var string
-     */
-    protected $host = '';
+    protected string $host = '';
 
-    /**
-     * @var int
-     */
-    protected $port = 8443;
+    protected int $port = 8443;
 
-    /**
-     * @var string
-     */
-    protected $username = '';
+    protected string $username = '';
 
-    /**
-     * @var string
-     */
-    protected $password = '';
+    protected string $password = '';
 
     public function __construct()
     {
