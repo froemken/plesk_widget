@@ -52,10 +52,10 @@ class Webspace implements WidgetInterface, EventDataInterface, AdditionalCssInte
                 'site' => $this->dataProvider->getSite(),
                 'button' => $this->getButtonProvider()
             ];
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             $this->hasError = true;
             $variables = [
-                'error' => $e->getMessage()
+                'error' => $exception->getMessage()
             ];
         }
 

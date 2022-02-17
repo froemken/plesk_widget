@@ -13,23 +13,32 @@ namespace StefanFroemken\PleskWidget\Plesk\Site;
 
 class GeneralInfo extends \PleskX\Api\Struct
 {
-    public string $asciiName = '';
+    /** @var string */
+    public $asciiName;
 
-    public string $crDate = '';
+    /** @var string */
+    public $crDate;
 
-    public string $description = '';
+    /** @var string */
+    public $description;
 
-    public array $dnsIpAddress = [];
+    /** @var array */
+    public $dnsIpAddress;
 
-    public string $guid;
+    /** @var string */
+    public $guid;
 
-    public string $htype;
+    /** @var string */
+    public $htype;
 
-    public string $name;
+    /** @var string */
+    public $name;
 
-    public string $realSize;
+    /** @var string */
+    public $realSize;
 
-    public string $status;
+    /** @var string */
+    public $status;
 
     public function __construct($apiResponse)
     {

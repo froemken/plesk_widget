@@ -13,11 +13,14 @@ namespace StefanFroemken\PleskWidget\Plesk;
 
 class Site extends \PleskX\Api\Struct
 {
-    public string $filterId;
+    /** @var string */
+    public $filterId;
 
-    public string $id;
+    /** @var string */
+    public $id;
 
-    public string $status;
+    /** @var string */
+    public $status;
 
     /** @var \StefanFroemken\PleskWidget\Plesk\Site\GeneralInfo */
     public $genInfo;
