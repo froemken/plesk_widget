@@ -28,7 +28,7 @@ Plesk Widget
       plesk, status, widget, dashboard
 
    :Copyright:
-      2013-2021
+      2013-2022
 
    :Author:
       Stefan Froemken
@@ -59,4 +59,3 @@ Plesk Widget
    Installation/Index
    KnownProblems/Index
    ChangeLog/Index
-   Links
