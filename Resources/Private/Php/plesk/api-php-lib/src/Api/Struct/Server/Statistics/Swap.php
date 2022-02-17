@@ -1,25 +1,25 @@
 <?php
 // Copyright 1999-2021. Plesk International GmbH.
 
-namespace PleskX\Api\Struct\Database;
+namespace PleskX\Api\Struct\Server\Statistics;
 
-class UserInfo extends \PleskX\Api\Struct
+class Swap extends \PleskX\Api\Struct
 {
     /** @var int */
-    public $id;
-
-    /** @var string */
-    public $login;
+    public $total;
 
     /** @var int */
-    public $dbId;
+    public $used;
+
+    /** @var int */
+    public $free;
 
     public function __construct($apiResponse)
     {
         $this->_initScalarProperties($apiResponse, [
-            'id',
-            'login',
-            'db-id',
+            'total',
+            'used',
+            'free',
         ]);
     }
 }

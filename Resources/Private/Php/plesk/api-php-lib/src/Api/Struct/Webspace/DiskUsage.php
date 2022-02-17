@@ -1,42 +1,42 @@
 <?php
-// Copyright 1999-2019. Plesk International GmbH.
+// Copyright 1999-2021. Plesk International GmbH.
 // Author: Frederic Leclercq
 
 namespace PleskX\Api\Struct\Webspace;
 
 class DiskUsage extends \PleskX\Api\Struct
 {
-    /** @var integer */
+    /** @var int */
     public $httpdocs;
 
-    /** @var integer */
+    /** @var int */
     public $httpsdocs;
 
-    /** @var integer */
+    /** @var int */
     public $subdomains;
 
-    /** @var integer */
+    /** @var int */
     public $anonftp;
 
-    /** @var integer */
+    /** @var int */
     public $logs;
 
-    /** @var integer */
+    /** @var int */
     public $dbases;
 
-    /** @var integer */
+    /** @var int */
     public $mailboxes;
 
-    /** @var integer */
+    /** @var int */
     public $maillists;
 
-    /** @var integer */
+    /** @var int */
     public $domaindumps;
 
-    /** @var integer */
+    /** @var int */
     public $configs;
 
-    /** @var integer */
+    /** @var int */
     public $chroot;
 
     public function __construct($apiResponse)

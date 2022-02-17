@@ -1,25 +1,25 @@
 <?php
 // Copyright 1999-2021. Plesk International GmbH.
 
-namespace PleskX\Api\Struct\Server;
+namespace PleskX\Api\Struct\SiteAlias;
 
 class GeneralInfo extends \PleskX\Api\Struct
 {
     /** @var string */
-    public $serverName;
+    public $name;
 
     /** @var string */
-    public $serverGuid;
+    public $asciiName;
 
     /** @var string */
-    public $mode;
+    public $status;
 
     public function __construct($apiResponse)
     {
         $this->_initScalarProperties($apiResponse, [
-            'server_name',
-            'server_guid',
-            'mode',
+            'name',
+            'ascii-name',
+            'status',
         ]);
     }
 }

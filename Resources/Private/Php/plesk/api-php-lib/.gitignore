@@ -1,8 +1,7 @@
-
 # vendor
-/composer.lock
 /vendor/
 
 # tests
 /phpunit.xml
-/php/tests/node_modules/
+/.phpunit.result.cache
+/coverage.xml

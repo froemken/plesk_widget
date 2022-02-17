@@ -1,17 +1,17 @@
 <?php
-// Copyright 1999-2019. Plesk International GmbH.
+// Copyright 1999-2021. Plesk International GmbH.
 
 namespace PleskX\Api\Struct\Dns;
 
 class Info extends \PleskX\Api\Struct
 {
-    /** @var integer */
+    /** @var int */
     public $id;
 
-    /** @var integer */
+    /** @var int */
     public $siteId;
 
-    /** @var integer */
+    /** @var int */
     public $siteAliasId;
 
     /** @var string */

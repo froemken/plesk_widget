@@ -1,21 +1,21 @@
 <?php
 // Copyright 1999-2021. Plesk International GmbH.
 
-namespace PleskX\Api\Struct\Customer;
+namespace PleskX\Api\Struct\Webspace;
 
-class Info extends \PleskX\Api\Struct
+class Limit extends \PleskX\Api\Struct
 {
-    /** @var int */
-    public $id;
+    /** @var string */
+    public $name;
 
     /** @var string */
-    public $guid;
+    public $value;
 
     public function __construct($apiResponse)
     {
         $this->_initScalarProperties($apiResponse, [
-            'id',
-            'guid',
+            'name',
+            'value',
         ]);
     }
 }

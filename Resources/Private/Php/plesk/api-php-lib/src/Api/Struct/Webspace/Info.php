@@ -1,21 +1,25 @@
 <?php
-// Copyright 1999-2019. Plesk International GmbH.
+// Copyright 1999-2021. Plesk International GmbH.
 
 namespace PleskX\Api\Struct\Webspace;
 
 class Info extends \PleskX\Api\Struct
 {
-    /** @var integer */
+    /** @var int */
     public $id;
 
     /** @var string */
     public $guid;
 
-    public function __construct($apiResponse)
+    /** @var string */
+    public $name;
+
+    public function __construct($apiResponse, $name = '')
     {
         $this->_initScalarProperties($apiResponse, [
             'id',
             'guid',
         ]);
+        $this->name = $name;
     }
 }

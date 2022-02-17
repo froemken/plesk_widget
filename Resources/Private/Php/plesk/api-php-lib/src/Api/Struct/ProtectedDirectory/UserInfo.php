@@ -1,11 +1,11 @@
 <?php
-// Copyright 1999-2019. Plesk International GmbH.
+// Copyright 1999-2021. Plesk International GmbH.
 
 namespace PleskX\Api\Struct\ProtectedDirectory;
 
 class UserInfo extends \PleskX\Api\Struct
 {
-    /** @var integer */
+    /** @var int */
     public $id;
 
     public function __construct($apiResponse)

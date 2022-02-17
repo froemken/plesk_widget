@@ -1,5 +1,5 @@
 <?php
-// Copyright 1999-2019. Plesk International GmbH.
+// Copyright 1999-2021. Plesk International GmbH.
 
 namespace PleskX\Api\Struct\Webspace;
 
@@ -13,7 +13,7 @@ class PermissionDescriptor extends \PleskX\Api\Struct
         $this->permissions = [];
 
         foreach ($apiResponse->descriptor->property as $propertyInfo) {
-            $this->permissions[(string)$propertyInfo->name] = new PermissionInfo($propertyInfo);
+            $this->permissions[(string) $propertyInfo->name] = new PermissionInfo($propertyInfo);
         }
     }
 }

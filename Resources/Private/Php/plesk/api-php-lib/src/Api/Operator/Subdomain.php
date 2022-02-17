@@ -1,13 +1,15 @@
 <?php
-// Copyright 1999-2019. Plesk International GmbH.
+// Copyright 1999-2021. Plesk International GmbH.
 
 namespace PleskX\Api\Operator;
+
 use PleskX\Api\Struct\Subdomain as Struct;
 
 class Subdomain extends \PleskX\Api\Operator
 {
     /**
      * @param array $properties
+     *
      * @return Struct\Info
      */
     public function create($properties)
@@ -19,21 +21,23 @@ class Subdomain extends \PleskX\Api\Operator
             if (is_array($value)) {
                 foreach ($value as $propertyName => $propertyValue) {
                     $property = $info->addChild($name);
-                    $property->addChild('name', $propertyName);
-                    $property->addChild('value', $propertyValue);
+                    $property->name = $propertyName;
+                    $property->value = $propertyValue;
                 }
                 continue;
             }
-            $info->addChild($name, $value);
+            $info->{$name} = $value;
         }
 
         $response = $this->_client->request($packet);
+
         return new Struct\Info($response);
     }
 
     /**
      * @param string $field
-     * @param integer|string $value
+     * @param int|string $value
+     *
      * @return bool
      */
     public function delete($field, $value)
@@ -43,18 +47,21 @@ class Subdomain extends \PleskX\Api\Operator
 
     /**
      * @param string $field
-     * @param integer|string $value
+     * @param int|string $value
+     *
      * @return Struct\Info
      */
     public function get($field, $value)
     {
         $items = $this->getAll($field, $value);
+
         return reset($items);
     }
 
     /**
      * @param string $field
-     * @param integer|string $value
+     * @param int|string $value
+     *
      * @return Struct\Info[]
      */
     public function getAll($field = null, $value = null)
@@ -75,7 +82,7 @@ class Subdomain extends \PleskX\Api\Operator
                 continue;
             }
             $item = new Struct\Info($xmlResult->data);
-            $item->id = (int)$xmlResult->id;
+            $item->id = (int) $xmlResult->id;
             $items[] = $item;
         }
 
