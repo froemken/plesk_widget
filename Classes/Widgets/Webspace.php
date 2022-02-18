@@ -30,28 +30,39 @@ class Webspace implements WidgetInterface, EventDataInterface, AdditionalCssInte
 
     private PleskDataProvider $dataProvider;
 
+    private ExtConf $extConf;
+
     private bool $hasError = false;
 
     public function __construct(
         WidgetConfigurationInterface $configuration,
         StandaloneView $view,
-        PleskDataProvider $dataProvider
+        PleskDataProvider $dataProvider,
+        ExtConf $extConf
     ) {
         $this->configuration = $configuration;
         $this->view = $view;
         $this->dataProvider = $dataProvider;
+        $this->extConf = $extConf;
     }
 
     public function renderWidgetContent(): string
     {
         try {
-            $variables = [
-                'configuration' => $this->configuration,
-                'customer' => $this->dataProvider->getCustomer(),
-                'hosting' => $this->dataProvider->getHosting(),
-                'site' => $this->dataProvider->getSite(),
-                'button' => $this->getButtonProvider()
-            ];
+            if ($this->extConf->getUsername() === '' || $this->extConf->getPassword() === '') {
+                $this->hasError = true;
+                $variables = [
+                    'error' => 'No username or password given. Please configure authentication in extension settings of EXT:plesk_widget'
+                ];
+            } else {
+                $variables = [
+                    'configuration' => $this->configuration,
+                    'customer' => $this->dataProvider->getCustomer(),
+                    'hosting' => $this->dataProvider->getHosting(),
+                    'site' => $this->dataProvider->getSite(),
+                    'button' => $this->getButtonProvider()
+                ];
+            }
         } catch (\Exception $exception) {
             $this->hasError = true;
             $variables = [
@@ -68,8 +79,6 @@ class Webspace implements WidgetInterface, EventDataInterface, AdditionalCssInte
 
     public function getEventData(): array
     {
-        $extConf = GeneralUtility::makeInstance(ExtConf::class);
-
         if ($this->hasError) {
             $data = '{}';
         } else {
@@ -90,7 +99,7 @@ class Webspace implements WidgetInterface, EventDataInterface, AdditionalCssInte
                     ],
                     'title' => [
                         'display' => true,
-                        'text' => 'Usage in ' . $extConf->getDiskUsageType()
+                        'text' => 'Usage in ' . $this->extConf->getDiskUsageType()
                     ]
                 ],
                 'data' => $data,
