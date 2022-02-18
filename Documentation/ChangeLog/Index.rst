@@ -7,6 +7,10 @@
 ChangeLog
 =========
 
+**Version 1.2.1**
+
+- Set EXT:dashboard as requirement
+
 **Version 1.2.0**
 
 - Add TYPO3 11 compatibility
