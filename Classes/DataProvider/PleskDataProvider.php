@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace StefanFroemken\PleskWidget\DataProvider;
 
 use PleskX\Api\Client;
+use PleskX\Api\Struct\Customer\GeneralInfo;
+use PleskX\Api\Struct\Site\HostingInfo;
 use StefanFroemken\PleskWidget\Configuration\ExtConf;
 use StefanFroemken\PleskWidget\Plesk\Webspace\Limits;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -53,11 +55,14 @@ class PleskDataProvider implements ChartDataProviderInterface
     public function getHosting(): array
     {
         $hostingInfo = $this->pleskClient->site()->getHosting(null, null);
+        if ($hostingInfo instanceof HostingInfo) {
+            return $hostingInfo->properties;
+        }
 
-        return $hostingInfo->properties;
+        return [];
     }
 
-    public function getCustomer(): \PleskX\Api\Struct\Customer\GeneralInfo
+    public function getCustomer(): GeneralInfo
     {
         $customers = $this->pleskClient->customer()->getAll();
 

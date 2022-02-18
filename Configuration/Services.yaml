@@ -7,9 +7,6 @@ services:
   StefanFroemken\PleskWidget\:
     resource: '../Classes/*'
 
-  StefanFroemken\PleskWidget\Configuration\ExtConf:
-    public: true
-
   dashboard.widget.plesk.webspace:
     class: 'StefanFroemken\PleskWidget\Widgets\Webspace'
     arguments:

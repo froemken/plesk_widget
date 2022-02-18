@@ -11,12 +11,14 @@ declare(strict_types=1);
 
 namespace StefanFroemken\PleskWidget\Configuration;
 
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /*
- * This class streamlines all settings from extension manager
+ * This class streamlines all settings from extension settings
  */
 class ExtConf implements SingletonInterface
 {
@@ -32,16 +34,19 @@ class ExtConf implements SingletonInterface
 
     public function __construct()
     {
-        // get global configuration
-        $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('plesk_widget');
-        if (is_array($extConf) && count($extConf)) {
-            // call setter method foreach configuration entry
-            foreach ($extConf as $key => $value) {
-                $methodName = 'set' . ucfirst($key);
-                if (method_exists($this, $methodName)) {
-                    $this->$methodName($value);
-                }
-            }
+        try {
+            $extConf = (array)GeneralUtility::makeInstance(ExtensionConfiguration::class)
+                ->get('plesk_widget');
+
+            $this->diskUsageType = trim((string)($extConf['diskUsageType'] ?? ''));
+            $this->host = trim((string)($extConf['host'] ?? ''));
+            $this->port = (int)($extConf['port'] ?? 8443);
+            $this->username = trim((string)($extConf['username'] ?? ''));
+            $this->password = trim((string)($extConf['password'] ?? ''));
+        } catch (ExtensionConfigurationExtensionNotConfiguredException $extensionConfigurationExtensionNotConfiguredException) {
+            // Do nothing. The values will still be empty. We catch that as Exception just before the first API call
+        } catch (ExtensionConfigurationPathDoesNotExistException $extensionConfigurationPathDoesNotExistException) {
+            // Can never be called, as $path is not set
         }
     }
 
@@ -50,19 +55,9 @@ class ExtConf implements SingletonInterface
         return $this->diskUsageType;
     }
 
-    public function setDiskUsageType(string $diskUsageType): void
-    {
-        $this->diskUsageType = $diskUsageType;
-    }
-
     public function getHost(): string
     {
         return $this->host;
-    }
-
-    public function setHost(string $host): void
-    {
-        $this->host = $host;
     }
 
     public function getPort(): int
@@ -70,28 +65,15 @@ class ExtConf implements SingletonInterface
         return $this->port;
     }
 
-    public function setPort(string $port): void
-    {
-        $this->port = (int)$port;
-    }
-
     public function getUsername(): string
     {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): void
-    {
-        $this->username = $username;
+        //return $this->username;
+        return '';
     }
 
     public function getPassword(): string
     {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): void
-    {
-        $this->password = $password;
+        //return $this->password;
+        return '';
     }
 }
