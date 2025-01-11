@@ -19,7 +19,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 /*
  * This class streamlines all settings from extension settings
  */
-class ExtConf implements SingletonInterface
+readonly class ExtConf implements SingletonInterface
 {
     private string $host;
 
