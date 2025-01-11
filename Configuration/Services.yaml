@@ -6,12 +6,12 @@ services:
 
   StefanFroemken\PleskWidget\:
     resource: '../Classes/*'
+    exclude: '../Classes/Widget/*'
 
   dashboard.widget.plesk.webspace:
-    class: 'StefanFroemken\PleskWidget\Widgets\Webspace'
+    class: 'StefanFroemken\PleskWidget\Widget\WebspaceWidget'
     arguments:
-      $view: '@dashboard.views.widget'
-      $dataProvider: '@StefanFroemken\PleskWidget\DataProvider\PleskDataProvider'
+      $dataProvider: '@StefanFroemken\PleskWidget\DataProvider\WebspaceDataProvider'
     tags:
       - name: dashboard.widget
         identifier: 'plesk.webspace'
@@ -20,4 +20,31 @@ services:
         description: 'Show used and available diskspace'
         iconIdentifier: 'content-widget-rss'
         height: 'medium'
-        width: 'medium'
+
+  dashboard.widget.plesk.server:
+    class: 'StefanFroemken\PleskWidget\Widget\ServerWidget'
+    arguments:
+      $dataProvider: '@StefanFroemken\PleskWidget\DataProvider\ServerDataProvider'
+    tags:
+      - name: dashboard.widget
+        identifier: 'plesk.server'
+        groupNames: 'systemInfo'
+        title: 'Plesk Server Information'
+        description: 'Show server related information and login link'
+        iconIdentifier: 'content-widget-rss'
+        height: 'medium'
+
+  dashboard.widget.plesk.php:
+    class: 'StefanFroemken\PleskWidget\Widget\PhpWidget'
+    tags:
+      - name: dashboard.widget
+        identifier: 'plesk.php'
+        groupNames: 'systemInfo'
+        title: 'Plesk PHP Settings'
+        description: 'Show PHP related information'
+        iconIdentifier: 'content-widget-rss'
+        height: 'medium'
+
+  StefanFroemken\PleskWidget\Service\PleskSiteService:
+    arguments:
+      $cache: '@cache.runtime'
