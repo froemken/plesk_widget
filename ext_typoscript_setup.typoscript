@@ -1,7 +1,0 @@
-module.tx_dashboard {
-  view {
-    templateRootPaths {
-      1610659265 = EXT:plesk_widget/Resources/Private/Templates/Dashboard/
-    }
-  }
-}
