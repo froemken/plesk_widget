@@ -1,0 +1,32 @@
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Widget/Widget"/>
+
+<f:section name="main">
+    <f:if condition="{error}">
+        <f:then>{error}</f:then>
+        <f:else>
+            <dl>
+                <dt>Owner</dt>
+                <dd>{customer.personalName}</dd>
+            </dl>
+            <dl>
+                <dt>Server IP Address</dt>
+                <f:for each="{ipAddresses}" as="ipAddress">
+                    <dd>{ipAddress}</dd>
+                </f:for>
+            </dl>
+            <f:if condition="{externalIpAddress}">
+                <dt>Public IP Address</dt>
+                <dd>{externalIpAddress}</dd>
+            </f:if>
+        </f:else>
+    </f:if>
+</f:section>
+
+<f:section name="footer">
+    <f:render partial="Widget/Button" arguments="{button: button}"/>
+</f:section>
+</html>

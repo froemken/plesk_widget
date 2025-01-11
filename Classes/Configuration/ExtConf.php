@@ -15,44 +15,41 @@ use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotCon
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /*
  * This class streamlines all settings from extension settings
  */
 class ExtConf implements SingletonInterface
 {
-    protected string $diskUsageType = '%';
+    private string $host;
 
-    protected string $host = '';
+    private int $port;
 
-    protected int $port = 8443;
+    private string $username;
 
-    protected string $username = '';
+    private string $password;
 
-    protected string $password = '';
+    private string $diskUsageType;
 
-    public function __construct()
+    private string $domain;
+
+    public function __construct(ExtensionConfiguration $extensionConfiguration)
     {
         try {
-            $extConf = (array)GeneralUtility::makeInstance(ExtensionConfiguration::class)
-                ->get('plesk_widget');
+            $extConf = (array)$extensionConfiguration->get('plesk_widget');
 
-            $this->diskUsageType = trim((string)($extConf['diskUsageType'] ?? ''));
             $this->host = trim((string)($extConf['host'] ?? ''));
             $this->port = (int)($extConf['port'] ?? 8443);
             $this->username = trim((string)($extConf['username'] ?? ''));
             $this->password = trim((string)($extConf['password'] ?? ''));
+
+            $this->diskUsageType = trim((string)($extConf['diskUsageType'] ?? '%'));
+            $this->domain = trim((string)($extConf['domain'] ?? ''));
         } catch (ExtensionConfigurationExtensionNotConfiguredException $extensionConfigurationExtensionNotConfiguredException) {
             // Do nothing. The values will still be empty. We catch that as Exception just before the first API call
         } catch (ExtensionConfigurationPathDoesNotExistException $extensionConfigurationPathDoesNotExistException) {
             // Can never be called, as $path is not set
         }
-    }
-
-    public function getDiskUsageType(): string
-    {
-        return $this->diskUsageType;
     }
 
     public function getHost(): string
@@ -67,13 +64,21 @@ class ExtConf implements SingletonInterface
 
     public function getUsername(): string
     {
-        //return $this->username;
-        return '';
+        return $this->username;
     }
 
     public function getPassword(): string
     {
-        //return $this->password;
-        return '';
+        return $this->password;
+    }
+
+    public function getDiskUsageType(): string
+    {
+        return $this->diskUsageType;
+    }
+
+    public function getDomain(): string
+    {
+        return $this->domain;
     }
 }

@@ -11,26 +11,48 @@ declare(strict_types=1);
 
 namespace StefanFroemken\PleskWidget\Plesk;
 
-class Site extends \PleskX\Api\Struct
+use PleskX\Api\Client;
+use PleskX\Api\Struct\Site\GeneralInfo;
+
+class Site
 {
-    /** @var string */
-    public $filterId;
+    private Client $pleskClient;
 
-    /** @var string */
-    public $id;
+    private GeneralInfo $generalInformation;
 
-    /** @var string */
-    public $status;
-
-    /** @var \StefanFroemken\PleskWidget\Plesk\Site\GeneralInfo */
-    public $genInfo;
-
-    public function __construct($apiResponse)
+    public function __construct(Client $pleskClient, GeneralInfo $generalInfo)
     {
-        $this->_initScalarProperties($apiResponse, [
-            'filter-id',
-            'id',
-            'status',
+        $this->pleskClient = $pleskClient;
+        $this->generalInformation = $generalInfo;
+    }
+
+    public function getGeneralInformation(): GeneralInfo
+    {
+        return $this->generalInformation;
+    }
+
+    public function getHosting(): ?Hosting
+    {
+        $response = $this->pleskClient->request([
+            'site' => [
+                'get' => [
+                    'filter' => [
+                        'guid' => $this->generalInformation->guid,
+                    ],
+                    'dataset' => [
+                        'hosting' => null,
+                    ]
+                ],
+            ],
         ]);
+
+        if (!property_exists($response->data->hosting, 'vrt_hst')) {
+            return null;
+        }
+
+        return new Hosting(
+            $response->data->hosting->vrt_hst->ip_address,
+            $response->data->hosting->vrt_hst->property
+        );
     }
 }
