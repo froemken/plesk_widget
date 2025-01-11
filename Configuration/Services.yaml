@@ -18,7 +18,7 @@ services:
         groupNames: 'systemInfo'
         title: 'Plesk Webspace'
         description: 'Show used and available diskspace'
-        iconIdentifier: 'content-widget-rss'
+        iconIdentifier: 'ext-plesk-widget-icon'
         height: 'medium'
 
   dashboard.widget.plesk.server:
@@ -31,7 +31,7 @@ services:
         groupNames: 'systemInfo'
         title: 'Plesk Server Information'
         description: 'Show server related information and login link'
-        iconIdentifier: 'content-widget-rss'
+        iconIdentifier: 'ext-plesk-widget-icon'
         height: 'medium'
 
   dashboard.widget.plesk.php:
@@ -42,7 +42,7 @@ services:
         groupNames: 'systemInfo'
         title: 'Plesk PHP Settings'
         description: 'Show PHP related information'
-        iconIdentifier: 'content-widget-rss'
+        iconIdentifier: 'ext-plesk-widget-icon'
         height: 'medium'
 
   StefanFroemken\PleskWidget\Service\PleskSiteService:
