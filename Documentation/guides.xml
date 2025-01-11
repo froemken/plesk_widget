@@ -12,7 +12,7 @@
                typo3-core-preferred="stable"
                interlink-shortcode="stefanfroemken/plesk-widget"
     />
-    <project title="Plesk Widgets" release="2.0" version="2.0.1" copyright="by Stefan Froemken"/>
+    <project title="Plesk Widgets" release="3.0" version="3.0.0" copyright="by Stefan Froemken"/>
     <inventory id="t3coreapi" url="https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/"/>
     <inventory id="t3install" url="https://docs.typo3.org/m/typo3/guide-installation/main/en-us/"/>
     <inventory id="t3sitepackage" url="https://docs.typo3.org/m/typo3/tutorial-sitepackage/main/en-us/"/>
