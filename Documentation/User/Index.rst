@@ -1,7 +1,7 @@
-.. include:: ../Includes.txt
+..  include:: /Includes.rst.txt
 
 
-.. _user-manual:
+..  _user-manual:
 
 ============
 Users Manual
@@ -9,10 +9,10 @@ Users Manual
 
 Target group: **Editors**
 
-#. Visit the new TYPO3 DashBoard
+#.  Visit the new TYPO3 DashBoard
 
-#. Click the + icon at the lower right
+#.  Click the + icon at the lower right
 
-#. Switch to tab System Information
+#.  Switch to tab System Information
 
-#. Choose the plesk widget
+#.  Choose one of the plesk widgets

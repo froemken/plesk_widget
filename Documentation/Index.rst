@@ -1,61 +1,46 @@
-.. include:: Includes.txt
+..  include:: /Includes.rst.txt
 
 
-.. Every manual should have a start label for cross-referencing to
-.. start page. Do not remove this!
-
-.. _start:
+..  _start:
 
 ============
 Plesk Widget
 ============
 
-.. only:: html
+:Language:
+    en
 
-   :Classification:
-      plesk_widget
+:Version:
+    |release|
 
-   :Version:
-      |release|
+:Description:
+    TYPO3 extension to show plesk information as widget on TYPO3 DashBoard
 
-   :Language:
-      en
+:Keywords:
+    plesk, widget, dashboard
 
-   :Description:
-      Manual covering TYPO3 extension plesk_widget
+:Copyright:
+    2021-2025
 
-   :Keywords:
-      plesk, status, widget, dashboard
+:Author:
+    Stefan Froemken
 
-   :Copyright:
-      2013-2022
+:Email:
+    froemken@gmail.com
 
-   :Author:
-      Stefan Froemken
+:License:
+   This document is published under the Open Content License
+   available from http://www.opencontent.org/opl.shtml
 
-   :Email:
-      froemken@gmail.com
+:Rendered:
+   |today|
 
-   :License:
-      This document is published under the Open Publication License
-      available from http://www.opencontent.org/openpub/
+..  toctree::
+    :titlesonly:
 
-   :Rendered:
-      |today|
-
-   The content of this document is related to TYPO3,
-   a GNU/GPL CMS/Framework available from `www.typo3.org <https://typo3.org/>`__.
-
-
-   **Table of Contents**
-
-.. toctree::
-   :maxdepth: 3
-
-
-   Introduction/Index
-   User/Index
-   Configuration/Index
-   Installation/Index
-   KnownProblems/Index
-   ChangeLog/Index
+    Introduction/Index
+    User/Index
+    Configuration/Index
+    Installation/Index
+    KnownProblems/Index
+    ChangeLog/Index
