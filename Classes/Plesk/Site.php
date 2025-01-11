@@ -41,7 +41,7 @@ class Site
                     ],
                     'dataset' => [
                         'hosting' => null,
-                    ]
+                    ],
                 ],
             ],
         ]);

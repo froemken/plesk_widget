@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api\Operator;
 
@@ -20,17 +26,17 @@ class SecretKey extends \PleskX\Api\Operator
         $packet = $this->_client->getPacket();
         $createTag = $packet->addChild($this->_wrapperTag)->addChild('create');
 
-        if ('' !== $ipAddress) {
+        if ($ipAddress !== '') {
             $createTag->addChild('ip_address', $ipAddress);
         }
 
-        if ('' !== $description) {
+        if ($description !== '') {
             $createTag->addChild('description', $description);
         }
 
         $response = $this->_client->request($packet);
 
-        return (string) $response->key;
+        return (string)$response->key;
     }
 
     /**

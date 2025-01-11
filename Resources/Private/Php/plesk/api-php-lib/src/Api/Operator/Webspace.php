@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api\Operator;
 
@@ -61,10 +67,6 @@ class Webspace extends \PleskX\Api\Operator
     }
 
     /**
-     * @param array $properties
-     * @param array|null $hostingProperties
-     * @param $planName
-     *
      * @return Struct\Info
      */
     public function create(array $properties, array $hostingProperties = null, $planName = null)

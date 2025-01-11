@@ -1,12 +1,18 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api;
 
 class Operator
 {
     /** @var string|null */
-    protected $_wrapperTag = null;
+    protected $_wrapperTag;
 
     /** @var \PleskX\Api\Client */
     protected $_client;
@@ -16,7 +22,7 @@ class Operator
         $this->_client = $client;
 
         if (is_null($this->_wrapperTag)) {
-            $classNameParts = explode('\\', get_class($this));
+            $classNameParts = explode('\\', static::class);
             $this->_wrapperTag = end($classNameParts);
             $this->_wrapperTag = strtolower(preg_replace('/([a-z])([A-Z])/', '\1-\2', $this->_wrapperTag));
         }
@@ -62,7 +68,7 @@ class Operator
             ],
         ]);
 
-        return 'ok' === (string) $response->status;
+        return (string)$response->status === 'ok';
     }
 
     /**
@@ -70,9 +76,6 @@ class Operator
      * @param string $infoTag
      * @param string|null $field
      * @param int|string|null $value
-     * @param callable|null $filter
-     *
-     * @return mixed
      */
     protected function _getItems($structClass, $infoTag, $field = null, $value = null, callable $filter = null)
     {

@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api\Operator;
 
@@ -29,7 +35,6 @@ class Database extends \PleskX\Api\Operator
 
     /**
      * @param string $command
-     * @param array $properties
      *
      * @return \PleskX\Api\XmlResponse
      */
@@ -39,7 +44,7 @@ class Database extends \PleskX\Api\Operator
         $info = $packet->addChild($this->_wrapperTag)->addChild($command);
 
         foreach ($properties as $name => $value) {
-            if (false !== strpos($value, '&')) {
+            if (str_contains($value, '&')) {
                 $info->$name = $value;
                 continue;
             }
@@ -50,15 +55,13 @@ class Database extends \PleskX\Api\Operator
     }
 
     /**
-     * @param array $properties
-     *
      * @return bool
      */
     public function updateUser(array $properties)
     {
         $response = $this->_process('set-db-user', $properties);
 
-        return 'ok' === (string) $response->status;
+        return (string)$response->status === 'ok';
     }
 
     /**

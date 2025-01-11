@@ -39,15 +39,15 @@ class WebspaceDataProvider implements ChartDataProviderInterface
                 0 => 'HTTP',
                 1 => 'Database',
                 2 => 'Logs',
-                3 => 'Free'
+                3 => 'Free',
             ],
             'datasets' => [
                 [
                     'backgroundColor' => WidgetApi::getDefaultChartColors(),
                     'border' => 0,
-                    'data' => $this->getWebSpaceStatus($pleskClient)
-                ]
-            ]
+                    'data' => $this->getWebSpaceStatus($pleskClient),
+                ],
+            ],
         ];
     }
 
@@ -72,7 +72,7 @@ class WebspaceDataProvider implements ChartDataProviderInterface
             3 => $this->calcDiskUsage(
                 ($diskSpace - $diskUsage->httpdocs + $diskUsage->httpsdocs + $diskUsage->dbases + $diskUsage->logs),
                 $diskSpace
-            )
+            ),
         ];
     }
 
