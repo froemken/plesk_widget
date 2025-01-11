@@ -16,11 +16,11 @@ $EM_CONF[$_EXTKEY] = [
     'author_company' => '',
     'state' => 'stable',
     'clearCacheOnLoad' => 0,
-    'version' => '2.0.0',
+    'version' => '2.0.1',
     'constraints' => [
         'depends' => [
-            'typo3' => '12.4.24',
-            'dashboard' => '12.4.24',
+            'typo3' => '12.4.24-12.4.99',
+            'dashboard' => '12.4.24-12.4.99',
         ],
         'conflicts' => [
         ],
