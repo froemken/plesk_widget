@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace StefanFroemken\PleskWidget\Service;
 
 use PleskX\Api\Client;
-use PleskX\Api\Struct\Site\GeneralInfo;
 use StefanFroemken\PleskWidget\Plesk\Site;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 
@@ -21,7 +20,6 @@ class PleskSiteService
     public function __construct(private readonly FrontendInterface $cache) {}
 
     /**
-     * @param Client $pleskClient
      * @return Site[]
      */
     public function getSites(Client $pleskClient): array

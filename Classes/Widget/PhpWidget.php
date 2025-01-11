@@ -15,7 +15,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use StefanFroemken\PleskWidget\Client\ExtensionSettingException;
 use StefanFroemken\PleskWidget\Client\PleskClientFactory;
 use StefanFroemken\PleskWidget\Configuration\ExtConf;
-use StefanFroemken\PleskWidget\DataProvider\PhpDataProvider;
 use StefanFroemken\PleskWidget\Service\PleskSiteService;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
 use TYPO3\CMS\Dashboard\Widgets\RequestAwareWidgetInterface;

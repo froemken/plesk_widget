@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api;
 
@@ -14,7 +20,6 @@ abstract class Struct
      * Initialize list of scalar properties by response.
      *
      * @param \SimpleXMLElement $apiResponse
-     * @param array $properties
      *
      * @throws \Exception
      */
@@ -33,12 +38,12 @@ abstract class Struct
             $docBlock = $reflectionProperty->getDocComment();
             $propertyType = preg_replace('/^.+ @var ([a-z]+) .+$/', '\1', $docBlock);
 
-            if ('string' == $propertyType) {
-                $value = (string) $value;
-            } elseif ('int' == $propertyType) {
-                $value = (int) $value;
-            } elseif ('bool' == $propertyType) {
-                $value = in_array((string) $value, ['true', 'on', 'enabled']);
+            if ($propertyType == 'string') {
+                $value = (string)$value;
+            } elseif ($propertyType == 'int') {
+                $value = (int)$value;
+            } elseif ($propertyType == 'bool') {
+                $value = in_array((string)$value, ['true', 'on', 'enabled']);
             } else {
                 throw new \Exception("Unknown property type '$propertyType'.");
             }
@@ -56,7 +61,7 @@ abstract class Struct
      */
     private function _underToCamel($under)
     {
-        $under = '_'.str_replace('_', ' ', strtolower($under));
+        $under = '_' . str_replace('_', ' ', strtolower($under));
 
         return ltrim(str_replace(' ', '', ucwords($under)), '_');
     }

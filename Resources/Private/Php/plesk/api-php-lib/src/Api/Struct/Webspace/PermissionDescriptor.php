@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api\Struct\Webspace;
 
@@ -13,7 +19,7 @@ class PermissionDescriptor extends \PleskX\Api\Struct
         $this->permissions = [];
 
         foreach ($apiResponse->descriptor->property as $propertyInfo) {
-            $this->permissions[(string) $propertyInfo->name] = new PermissionInfo($propertyInfo);
+            $this->permissions[(string)$propertyInfo->name] = new PermissionInfo($propertyInfo);
         }
     }
 }

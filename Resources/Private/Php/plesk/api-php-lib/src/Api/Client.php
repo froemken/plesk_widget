@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api;
 
@@ -10,8 +16,8 @@ use SimpleXMLElement;
  */
 class Client
 {
-    const RESPONSE_SHORT = 1;
-    const RESPONSE_FULL = 2;
+    public const RESPONSE_SHORT = 1;
+    public const RESPONSE_FULL = 2;
 
     protected $_host;
     protected $_port;
@@ -87,8 +93,6 @@ class Client
 
     /**
      * Set custom function to verify response of API call according your own needs. Default verifying will be used if it is not specified.
-     *
-     * @param callable|null $function
      */
     public function setVerifyResponse(callable $function = null)
     {
@@ -136,7 +140,7 @@ class Client
     {
         $protocolVersion = !is_null($version) ? $version : $this->_version;
         $content = "<?xml version='1.0' encoding='UTF-8' ?>";
-        $content .= '<packet'.('' === $protocolVersion ? '' : " version='$protocolVersion'").'/>';
+        $content .= '<packet' . ($protocolVersion === '' ? '' : " version='$protocolVersion'") . '/>';
 
         return new SimpleXMLElement($content);
     }
@@ -163,9 +167,9 @@ class Client
             }
         }
 
-        if ('sdk' == $this->_protocol) {
-            $version = ('' == $this->_version) ? null : $this->_version;
-            $requestXml = new SimpleXMLElement((string) $request);
+        if ($this->_protocol == 'sdk') {
+            $version = ($this->_version == '') ? null : $this->_version;
+            $requestXml = new SimpleXMLElement((string)$request);
             $xml = \pm_ApiRpc::getService($version)->call($requestXml->children()[0]->asXml(), $this->_login);
         } else {
             $xml = $this->_performHttpRequest($request);
@@ -175,7 +179,7 @@ class Client
             ? call_user_func($this->_verifyResponseCallback, $xml)
             : $this->_verifyResponse($xml);
 
-        return (self::RESPONSE_FULL == $mode) ? $xml : $xml->xpath('//result')[0];
+        return ($mode == self::RESPONSE_FULL) ? $xml : $xml->xpath('//result')[0];
     }
 
     /**
@@ -199,13 +203,13 @@ class Client
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->_getHeaders());
         curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
 
-        if ('' !== $this->_proxy) {
+        if ($this->_proxy !== '') {
             curl_setopt($curl, CURLOPT_PROXY, $this->_proxy);
         }
 
         $result = curl_exec($curl);
 
-        if (false === $result) {
+        if ($result === false) {
             throw new Client\Exception(curl_error($curl), curl_errno($curl));
         }
 
@@ -219,7 +223,6 @@ class Client
     /**
      * Perform multiple API requests using single HTTP request.
      *
-     * @param $requests
      * @param int $mode
      *
      * @throws Client\Exception
@@ -233,21 +236,20 @@ class Client
         foreach ($requests as $request) {
             if ($request instanceof SimpleXMLElement) {
                 throw new Client\Exception('SimpleXML type of request is not supported for multi requests.');
-            } else {
-                if (is_array($request)) {
-                    $request = $this->_arrayToXml($request, $requestXml)->asXML();
-                } elseif (preg_match('/^[a-z]/', $request)) {
-                    $this->_expandRequestShortSyntax($request, $requestXml);
-                }
             }
+            if (is_array($request)) {
+                $request = $this->_arrayToXml($request, $requestXml)->asXML();
+            } elseif (preg_match('/^[a-z]/', $request)) {
+                $this->_expandRequestShortSyntax($request, $requestXml);
+            }
+
             $responses[] = $this->request($request);
         }
 
-        if ('sdk' == $this->_protocol) {
+        if ($this->_protocol == 'sdk') {
             throw new Client\Exception('Multi requests are not supported via SDK.');
-        } else {
-            $responseXml = $this->_performHttpRequest($requestXml->asXML());
         }
+        $responseXml = $this->_performHttpRequest($requestXml->asXML());
 
         $responses = [];
         foreach ($responseXml->children() as $childNode) {
@@ -259,7 +261,7 @@ class Client
             $dom->documentElement->appendChild($childDomNode);
 
             $response = simplexml_load_string($dom->saveXML());
-            $responses[] = (self::RESPONSE_FULL == $mode) ? $response : $response->xpath('//result')[0];
+            $responses[] = ($mode == self::RESPONSE_FULL) ? $response : $response->xpath('//result')[0];
         }
 
         return $responses;
@@ -296,13 +298,13 @@ class Client
      */
     protected function _verifyResponse($xml)
     {
-        if ($xml->system && $xml->system->status && 'error' == (string) $xml->system->status) {
-            throw new Exception((string) $xml->system->errtext, (int) $xml->system->errcode);
+        if ($xml->system && $xml->system->status && (string)$xml->system->status == 'error') {
+            throw new Exception((string)$xml->system->errtext, (int)$xml->system->errcode);
         }
 
         if ($xml->xpath('//status[text()="error"]') && $xml->xpath('//errcode') && $xml->xpath('//errtext')) {
-            $errorCode = (int) $xml->xpath('//errcode')[0];
-            $errorMessage = (string) $xml->xpath('//errtext')[0];
+            $errorCode = (int)$xml->xpath('//errcode')[0];
+            $errorMessage = (string)$xml->xpath('//errtext')[0];
 
             throw new Exception($errorMessage, $errorCode);
         }
@@ -312,7 +314,6 @@ class Client
      * Expand short syntax (some.method.call) into full XML representation.
      *
      * @param string $request
-     * @param SimpleXMLElement $xml
      *
      * @return string
      */
@@ -327,7 +328,7 @@ class Client
             if ($part !== $lastParts) {
                 $node = $node->addChild($name);
             } else {
-                $node->{$name} = (string) $value;
+                $node->{$name} = (string)$value;
             }
         }
 
@@ -337,8 +338,6 @@ class Client
     /**
      * Convert array to XML representation.
      *
-     * @param array $array
-     * @param SimpleXMLElement $xml
      * @param string $parentEl
      *
      * @return SimpleXMLElement
@@ -350,7 +349,7 @@ class Client
             if (is_array($value)) {
                 $this->_arrayToXml($value, $this->_isAssocArray($value) ? $xml->addChild($el) : $xml, $el);
             } else {
-                $xml->{$el} = (string) $value;
+                $xml->{$el} = (string)$value;
             }
         }
 
@@ -358,8 +357,6 @@ class Client
     }
 
     /**
-     * @param array $array
-     *
      * @return bool
      */
     protected function _isAssocArray(array $array)
@@ -375,7 +372,7 @@ class Client
     protected function _getOperator($name)
     {
         if (!isset($this->_operatorsCache[$name])) {
-            $className = '\\PleskX\\Api\\Operator\\'.$name;
+            $className = '\\PleskX\\Api\\Operator\\' . $name;
             $this->_operatorsCache[$name] = new $className($this);
         }
 

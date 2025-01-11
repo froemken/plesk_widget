@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api\Operator;
 
@@ -16,7 +22,7 @@ class Session extends \PleskX\Api\Operator
         $response = $this->request('get');
 
         foreach ($response->session as $sessionInfo) {
-            $sessions[(string) $sessionInfo->id] = new Struct\Info($sessionInfo);
+            $sessions[(string)$sessionInfo->id] = new Struct\Info($sessionInfo);
         }
 
         return $sessions;
@@ -31,6 +37,6 @@ class Session extends \PleskX\Api\Operator
     {
         $response = $this->request("terminate.session-id=$sessionId");
 
-        return 'ok' === (string) $response->status;
+        return (string)$response->status === 'ok';
     }
 }

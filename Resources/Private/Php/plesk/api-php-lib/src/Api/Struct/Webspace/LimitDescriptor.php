@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api\Struct\Webspace;
 
@@ -13,7 +19,7 @@ class LimitDescriptor extends \PleskX\Api\Struct
         $this->limits = [];
 
         foreach ($apiResponse->descriptor->property as $propertyInfo) {
-            $this->limits[(string) $propertyInfo->name] = new LimitInfo($propertyInfo);
+            $this->limits[(string)$propertyInfo->name] = new LimitInfo($propertyInfo);
         }
     }
 }

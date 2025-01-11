@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api\Struct\Server;
 
@@ -37,7 +43,7 @@ class Statistics extends \PleskX\Api\Struct
 
         $this->diskSpace = [];
         foreach ($apiResponse->diskspace as $disk) {
-            $this->diskSpace[(string) $disk->device->name] = new Statistics\DiskSpace($disk->device);
+            $this->diskSpace[(string)$disk->device->name] = new Statistics\DiskSpace($disk->device);
         }
     }
 }

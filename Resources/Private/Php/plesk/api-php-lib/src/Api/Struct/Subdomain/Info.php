@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api\Struct\Subdomain;
 
@@ -26,7 +32,7 @@ class Info extends \PleskX\Api\Struct
             'name',
         ]);
         foreach ($apiResponse->property as $propertyInfo) {
-            $this->properties[(string) $propertyInfo->name] = (string) $propertyInfo->value;
+            $this->properties[(string)$propertyInfo->name] = (string)$propertyInfo->value;
         }
     }
 }

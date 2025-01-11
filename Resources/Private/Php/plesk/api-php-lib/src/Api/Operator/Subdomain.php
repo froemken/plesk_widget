@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api\Operator;
 
@@ -82,7 +88,7 @@ class Subdomain extends \PleskX\Api\Operator
                 continue;
             }
             $item = new Struct\Info($xmlResult->data);
-            $item->id = (int) $xmlResult->id;
+            $item->id = (int)$xmlResult->id;
             $items[] = $item;
         }
 

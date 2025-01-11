@@ -1,5 +1,11 @@
 <?php
-// Copyright 1999-2021. Plesk International GmbH.
+
+/*
+ * This file is part of the package stefanfroemken/plesk-widget.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace PleskX\Api\Struct\Webspace;
 
@@ -17,7 +23,7 @@ class Limits extends \PleskX\Api\Struct
         $this->limits = [];
 
         foreach ($apiResponse->limit as $limit) {
-            $this->limits[(string) $limit->name] = new Limit($limit);
+            $this->limits[(string)$limit->name] = new Limit($limit);
         }
     }
 }
