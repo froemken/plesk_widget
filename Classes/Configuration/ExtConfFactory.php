@@ -15,6 +15,7 @@ use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotCon
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\MathUtility;
+use ValueError;
 
 readonly class ExtConfFactory
 {
@@ -54,6 +55,15 @@ readonly class ExtConfFactory
                 $extensionSettings['port'] = (int)$extensionSettings['port'];
             } else {
                 $extensionSettings['port'] = self::DEFAULT_SETTINGS['port'];
+            }
+
+            // Migrate diskUsageType to ENUM
+            try {
+                $extensionSettings['diskUsageType'] = DiskUsageTypeEnum::from(
+                    (string)$extensionSettings['diskUsageType']
+                );
+            } catch (ValueError) {
+                $extensionSettings['diskUsageType'] = DiskUsageTypeEnum::from(self::DEFAULT_SETTINGS['diskUsageType']);
             }
         } catch (ExtensionConfigurationExtensionNotConfiguredException) {
             // Do nothing. Keep the default values
