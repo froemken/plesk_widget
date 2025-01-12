@@ -12,7 +12,9 @@ declare(strict_types=1);
 namespace StefanFroemken\PleskWidget\Tests\Functional\Configuration;
 
 use PHPUnit\Framework\Attributes\Test;
+use StefanFroemken\PleskWidget\Configuration\DiskUsageTypeEnum;
 use StefanFroemken\PleskWidget\Configuration\ExtConf;
+use TypeError;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
@@ -36,7 +38,7 @@ class ExtConfTest extends FunctionalTestCase
             'port' => 1234,
             'username' => 'mustermann',
             'password' => 'very-cryptic',
-            'diskUsageType' => 'MB',
+            'diskUsageType' => DiskUsageTypeEnum::from('MB'),
             'domain' => '134.example.com',
         ];
 
@@ -94,6 +96,21 @@ class ExtConfTest extends FunctionalTestCase
         self::assertSame(
             'MB',
             $this->subject->getDiskUsageType()
+        );
+    }
+
+    #[Test]
+    public function getDiskUsageWithInvalidValueWillThrowTypeError(): void
+    {
+        self::expectException(TypeError::class);
+
+        $subject = new ExtConf([
+            'diskUsageType' => 'INVALID',
+        ]);
+
+        self::assertSame(
+            'WillNotBeTested',
+            $subject->getDiskUsageType()
         );
     }
 

@@ -193,6 +193,23 @@ class ExtConfFactoryTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function getDiskUsageWithInvalidValueWillReturnDefaultValue(): void
+    {
+        $this->extensionConfigurationMock
+            ->expects(self::once())
+            ->method('get')
+            ->with(self::identicalTo('plesk_widget'))
+            ->willReturn([
+                'diskUsageType' => 'INVALID',
+            ]);
+
+        self::assertSame(
+            '%',
+            $this->subject->create()->getDiskUsageType()
+        );
+    }
+
+    #[Test]
     public function getDomainWillInitiallyReturnEmptyValue(): void
     {
         self::assertSame(

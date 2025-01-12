@@ -24,7 +24,7 @@ readonly class ExtConf
 
     private string $password;
 
-    private string $diskUsageType;
+    private DiskUsageTypeEnum $diskUsageType;
 
     private string $domain;
 
@@ -57,7 +57,7 @@ readonly class ExtConf
 
     public function getDiskUsageType(): string
     {
-        return $this->diskUsageType;
+        return $this->diskUsageType->value;
     }
 
     public function getDomain(): string
