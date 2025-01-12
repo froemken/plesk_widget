@@ -23,11 +23,13 @@
 		"plesk/api-php-lib": "1.1.2"
 	},
 	"require-dev": {
+		"ergebnis/composer-normalize": "^2.44",
 		"friendsofphp/php-cs-fixer": "^3.14",
-		"phpunit/phpunit": "^9.6",
+		"phpstan/phpdoc-parser": "^1.33",
+		"phpunit/phpunit": "^11.2.5",
 		"roave/security-advisories": "dev-latest",
-		"typo3/coding-standards": "^0.6",
-		"typo3/testing-framework": "^7.0.2"
+		"typo3/coding-standards": "^0.8",
+		"typo3/testing-framework": "^9.0.1"
 	},
 	"replace": {
 		"typo3-ter/plesk-widget": "self.version"
@@ -36,6 +38,11 @@
 		"psr-4": {
 			"StefanFroemken\\PleskWidget\\": "Classes",
 			"PleskX\\": "Resources/Private/Php/plesk/api-php-lib/src"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"StefanFroemken\\PleskWidget\\Tests\\": "Tests"
 		}
 	},
 	"config": {

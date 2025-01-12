@@ -11,15 +11,10 @@ declare(strict_types=1);
 
 namespace StefanFroemken\PleskWidget\Configuration;
 
-use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
-use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\SingletonInterface;
-
 /*
  * This class streamlines all settings from extension settings
  */
-readonly class ExtConf implements SingletonInterface
+readonly class ExtConf
 {
     private string $host;
 
@@ -33,22 +28,10 @@ readonly class ExtConf implements SingletonInterface
 
     private string $domain;
 
-    public function __construct(ExtensionConfiguration $extensionConfiguration)
+    public function __construct(array $extensionSettings)
     {
-        try {
-            $extConf = (array)$extensionConfiguration->get('plesk_widget');
-
-            $this->host = trim((string)($extConf['host'] ?? ''));
-            $this->port = (int)($extConf['port'] ?? 8443);
-            $this->username = trim((string)($extConf['username'] ?? ''));
-            $this->password = trim((string)($extConf['password'] ?? ''));
-
-            $this->diskUsageType = trim((string)($extConf['diskUsageType'] ?? '%'));
-            $this->domain = trim((string)($extConf['domain'] ?? ''));
-        } catch (ExtensionConfigurationExtensionNotConfiguredException $extensionConfigurationExtensionNotConfiguredException) {
-            // Do nothing. The values will still be empty. We catch that as Exception just before the first API call
-        } catch (ExtensionConfigurationPathDoesNotExistException $extensionConfigurationPathDoesNotExistException) {
-            // Can never be called, as $path is not set
+        foreach ($extensionSettings as $property => $value) {
+            $this->{$property} = $value;
         }
     }
 
