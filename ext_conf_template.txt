@@ -6,7 +6,7 @@ port = 8443
 username =
 # cat=plesk; type=string; label=Plesk password
 password =
-# cat=basic; type=options[Percent (%)=%,MegaByte (MB)=MB,GigaByte (GB)=GB]; label=Disk usage type: Show disk usage in percent or in Mega- or GigaByte?
+# cat=view; type=options[Percent (%)=%,MegaByte (MB)=MB,GigaByte (GB)=GB]; label=Disk usage type: Show disk usage in percent or in Mega- or GigaByte?
 diskUsageType = %
-# cat=basic; type=string; label=Domain: Enter domain name to show info about. Without www and without scheme (https://)
+# cat=view; type=string; label=Domain: Enter domain name to show info about. Without www and without scheme (https://)
 domain =

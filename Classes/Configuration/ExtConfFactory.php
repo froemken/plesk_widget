@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace StefanFroemken\PleskWidget\Configuration;
 
+use StefanFroemken\PleskWidget\Builder\ExtConfBuilder;
+use StefanFroemken\PleskWidget\Builder\ExtConfBuilderFactory;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -19,20 +21,37 @@ use ValueError;
 
 readonly class ExtConfFactory
 {
+    /**
+     * Stored values of ext_conf_template.txt are always string.
+     * So, keep all values as string here, too.
+     * They will be cast within their setter methods.
+     */
     private const DEFAULT_SETTINGS = [
         'host' => '',
-        'port' => 8443,
+        'port' => '8443',
         'username' => '',
         'password' => '',
         'diskUsageType' => '%',
         'domain' => '',
     ];
 
-    public function __construct(private ExtensionConfiguration $extensionConfiguration) {}
+    public function __construct(
+        private ExtConfBuilderFactory $extConfBuilderFactory,
+        private ExtensionConfiguration $extensionConfiguration
+    ) {}
 
-    public function create(): ExtConf
+    public function createExtConf(): ExtConf
     {
-        return new ExtConf($this->getExtensionSettings());
+        $extensionSettings = $this->getExtensionSettings();
+
+        return $this->createExtConfBuilder()
+            ->setHost($extensionSettings['host'])
+            ->setPort($extensionSettings['port'])
+            ->setUsername($extensionSettings['username'])
+            ->setPassword($extensionSettings['password'])
+            ->setDiskUsageType($extensionSettings['diskUsageType'])
+            ->setDomain($extensionSettings['domain'])
+            ->buildExtConf();
     }
 
     private function getExtensionSettings(): array
@@ -40,31 +59,11 @@ readonly class ExtConfFactory
         $extensionSettings = self::DEFAULT_SETTINGS;
 
         try {
-            $extensionSettings = (array)$this->extensionConfiguration->get('plesk_widget');
+            $extensionSettings = $this->sanitizeExtensionSettings(
+                (array)$this->extensionConfiguration->get('plesk_widget')
+            );
 
-            // Remove whitespaces
-            $extensionSettings = array_map('trim', $extensionSettings);
-
-            // remove empty values
-            $extensionSettings = array_filter($extensionSettings);
-
-            $extensionSettings = array_merge(self::DEFAULT_SETTINGS, $extensionSettings);
-
-            // Special handling for integer value "port"
-            if (MathUtility::canBeInterpretedAsInteger($extensionSettings['port'])) {
-                $extensionSettings['port'] = (int)$extensionSettings['port'];
-            } else {
-                $extensionSettings['port'] = self::DEFAULT_SETTINGS['port'];
-            }
-
-            // Migrate diskUsageType to ENUM
-            try {
-                $extensionSettings['diskUsageType'] = DiskUsageTypeEnum::from(
-                    (string)$extensionSettings['diskUsageType']
-                );
-            } catch (ValueError) {
-                $extensionSettings['diskUsageType'] = DiskUsageTypeEnum::from(self::DEFAULT_SETTINGS['diskUsageType']);
-            }
+            return array_merge(self::DEFAULT_SETTINGS, $extensionSettings);
         } catch (ExtensionConfigurationExtensionNotConfiguredException) {
             // Do nothing. Keep the default values
         } catch (ExtensionConfigurationPathDoesNotExistException) {
@@ -72,5 +71,19 @@ readonly class ExtConfFactory
         }
 
         return $extensionSettings;
+    }
+
+    private function sanitizeExtensionSettings(array $extensionSettings): array
+    {
+        // Remove whitespaces
+        $extensionSettings = array_map('trim', $extensionSettings);
+
+        // remove empty values
+        return array_filter($extensionSettings);
+    }
+
+    private function createExtConfBuilder(): ExtConfBuilder
+    {
+        return $this->extConfBuilderFactory->createBuilder();
     }
 }

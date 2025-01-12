@@ -46,7 +46,7 @@ services:
         height: 'medium'
 
   StefanFroemken\PleskWidget\Configuration\ExtConf:
-    factory: ['@StefanFroemken\PleskWidget\Configuration\ExtConfFactory', 'create']
+    factory: ['@StefanFroemken\PleskWidget\Configuration\ExtConfFactory', 'createExtConf']
 
   StefanFroemken\PleskWidget\Service\PleskSiteService:
     arguments:
