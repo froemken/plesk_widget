@@ -63,7 +63,7 @@ class WebspaceWidget implements WidgetInterface, EventDataInterface, JavaScriptI
                         ],
                         'title' => [
                             'display' => true,
-                            'text' => 'Usage in ' . $this->extConf->getDiskUsageType(),
+                            'text' => 'Usage in ' . $this->extConf->getViewConfiguration()->getDiskUsageType(),
                         ],
                         'tooltip' => [
                             'enabled' => true,

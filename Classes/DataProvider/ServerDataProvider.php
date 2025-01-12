@@ -36,7 +36,10 @@ class ServerDataProvider
                 $pleskClient->getProtocol() ?: 'https',
                 $pleskClient->getHost(),
                 $pleskClient->getPort(),
-                $pleskClient->server()->createSession($this->extConf->getUsername(), $externalIpAddress),
+                $pleskClient->server()->createSession(
+                    $this->extConf->getCredentialsConfiguration()->getUsername(),
+                    $externalIpAddress
+                ),
                 '/smb/web/view'
             );
         }

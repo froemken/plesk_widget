@@ -16,7 +16,6 @@ use StefanFroemken\PleskWidget\Configuration\CredentialsConfiguration;
 use StefanFroemken\PleskWidget\Configuration\DiskUsageTypeEnum;
 use StefanFroemken\PleskWidget\Configuration\ExtConf;
 use StefanFroemken\PleskWidget\Configuration\ViewConfiguration;
-use TypeError;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**

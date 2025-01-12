@@ -48,14 +48,15 @@ class PhpWidget implements WidgetInterface, RequestAwareWidgetInterface
 
         try {
             $pleskClient = $this->pleskClientFactory->create();
+            $domain = $this->extConf->getViewConfiguration()->getDomain();
 
-            if ($this->extConf->getDomain() === '') {
+            if ($domain === '') {
                 $variables['error'] = 'You have to select a domain name in extension settings of EXT:plesk-widget.';
-            } elseif ($site = $this->pleskSiteService->getSiteByName($this->extConf->getDomain(), $pleskClient)) {
-                $variables['domain'] = $this->extConf->getDomain();
+            } elseif ($site = $this->pleskSiteService->getSiteByName($domain, $pleskClient)) {
+                $variables['domain'] = $domain;
                 $variables['hosting'] = $site->getHosting();
             } else {
-                $variables['error'] = 'Plesk API can not retrieve domain information for ' . $this->extConf->getDomain();
+                $variables['error'] = 'Plesk API can not retrieve domain information for ' . $domain;
             }
         } catch (ExtensionSettingException $extensionSettingException) {
             $variables['error'] = $extensionSettingException->getMessage();
