@@ -7,10 +7,10 @@
  * LICENSE file that was distributed with this source code.
  */
 
-namespace JWeiland\Glossary2\Tests\Functional\Configuration;
+namespace StefanFroemken\PleskWidget\Tests\Functional\Configuration;
 
+use PHPUnit\Framework\Attributes\Test;
 use StefanFroemken\PleskWidget\Configuration\ExtConf;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
@@ -18,11 +18,10 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  */
 class ExtConfTest extends FunctionalTestCase
 {
-    protected ExtensionConfiguration|MockObject $extensionConfigurationMock;
-
     protected ExtConf $subject;
 
     protected array $testExtensionsToLoad = [
+        'typo3/cms-dashboard',
         'stefanfroemken/plesk-widget',
     ];
 
@@ -30,27 +29,78 @@ class ExtConfTest extends FunctionalTestCase
     {
         parent::setUp();
 
-        $this->extensionConfigurationMock = $this->createMock(ExtensionConfiguration::class);
+        $extensionSetting = [
+            'host' => 'plesk.example.com',
+            'port' => 1234,
+            'username' => 'mustermann',
+            'password' => 'very-cryptic',
+            'diskUsageType' => 'MB',
+            'domain' => '134.example.com',
+        ];
 
-        $this->subject = new ExtConf(
-            $this->extensionConfigurationMock
-        );
+        $this->subject = new ExtConf($extensionSetting);
     }
 
     protected function tearDown(): void
     {
         unset(
+            $this->extensionConfigurationMock,
             $this->subject,
         );
         parent::tearDown();
     }
 
     #[Test]
-    public function getHostWillReturnEmptyHost(): void
+    public function getHostWillReturnHost(): void
     {
         self::assertSame(
-            '0-9,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z',
-            $this->subject->getPossibleLetters(),
+            'plesk.example.com',
+            $this->subject->getHost()
+        );
+    }
+
+    #[Test]
+    public function getPortWillReturnPortAsInt(): void
+    {
+        self::assertSame(
+            1234,
+            $this->subject->getPort()
+        );
+    }
+
+    #[Test]
+    public function getUsernameWillReturnUsername(): void
+    {
+        self::assertSame(
+            'mustermann',
+            $this->subject->getUsername()
+        );
+    }
+
+    #[Test]
+    public function getPasswordWillReturnPassword(): void
+    {
+        self::assertSame(
+            'very-cryptic',
+            $this->subject->getPassword()
+        );
+    }
+
+    #[Test]
+    public function getDiskUsageTypeWillReturnDiskUsageType(): void
+    {
+        self::assertSame(
+            'MB',
+            $this->subject->getDiskUsageType()
+        );
+    }
+
+    #[Test]
+    public function getDomainWillReturnDomain(): void
+    {
+        self::assertSame(
+            '134.example.com',
+            $this->subject->getDomain()
         );
     }
 }
