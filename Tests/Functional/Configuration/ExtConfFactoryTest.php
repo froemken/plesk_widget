@@ -14,6 +14,7 @@ namespace Functional\Configuration;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
+use StefanFroemken\PleskWidget\Builder\ExtConfBuilderFactory;
 use StefanFroemken\PleskWidget\Configuration\ExtConfFactory;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -39,6 +40,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
         $this->extensionConfigurationMock = $this->createMock(ExtensionConfiguration::class);
 
         $this->subject = new ExtConfFactory(
+            new ExtConfBuilderFactory(),
             $this->extensionConfigurationMock
         );
     }
@@ -57,7 +59,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
     {
         self::assertSame(
             '',
-            $this->subject->create()->getHost()
+            $this->subject->createExtConf()->getCredentialsConfiguration()->getHost()
         );
     }
 
@@ -74,7 +76,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
 
         self::assertSame(
             'plesk.example.com',
-            $this->subject->create()->getHost()
+            $this->subject->createExtConf()->getCredentialsConfiguration()->getHost()
         );
     }
 
@@ -83,7 +85,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
     {
         self::assertSame(
             8443,
-            $this->subject->create()->getPort()
+            $this->subject->createExtConf()->getCredentialsConfiguration()->getPort()
         );
     }
 
@@ -110,7 +112,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
 
         self::assertSame(
             $expectedPort,
-            $this->subject->create()->getPort()
+            $this->subject->createExtConf()->getCredentialsConfiguration()->getPort()
         );
     }
 
@@ -119,7 +121,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
     {
         self::assertSame(
             '',
-            $this->subject->create()->getUsername()
+            $this->subject->createExtConf()->getCredentialsConfiguration()->getUsername()
         );
     }
 
@@ -136,7 +138,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
 
         self::assertSame(
             'mustermann',
-            $this->subject->create()->getUsername()
+            $this->subject->createExtConf()->getCredentialsConfiguration()->getUsername()
         );
     }
 
@@ -145,7 +147,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
     {
         self::assertSame(
             '',
-            $this->subject->create()->getPassword()
+            $this->subject->createExtConf()->getCredentialsConfiguration()->getPassword()
         );
     }
 
@@ -162,7 +164,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
 
         self::assertSame(
             'very-cryptic',
-            $this->subject->create()->getPassword()
+            $this->subject->createExtConf()->getCredentialsConfiguration()->getPassword()
         );
     }
 
@@ -171,7 +173,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
     {
         self::assertSame(
             '%',
-            $this->subject->create()->getDiskUsageType()
+            $this->subject->createExtConf()->getViewConfiguration()->getDiskUsageType()
         );
     }
 
@@ -188,7 +190,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
 
         self::assertSame(
             'MB',
-            $this->subject->create()->getDiskUsageType()
+            $this->subject->createExtConf()->getViewConfiguration()->getDiskUsageType()
         );
     }
 
@@ -205,7 +207,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
 
         self::assertSame(
             '%',
-            $this->subject->create()->getDiskUsageType()
+            $this->subject->createExtConf()->getViewConfiguration()->getDiskUsageType()
         );
     }
 
@@ -214,7 +216,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
     {
         self::assertSame(
             '',
-            $this->subject->create()->getDomain()
+            $this->subject->createExtConf()->getViewConfiguration()->getDomain()
         );
     }
 
@@ -231,7 +233,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
 
         self::assertSame(
             '134.example.com',
-            $this->subject->create()->getDomain()
+            $this->subject->createExtConf()->getViewConfiguration()->getDomain()
         );
     }
 
@@ -251,7 +253,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
                 'domain' => ' 134.example.com    ',
             ]);
 
-        $extConf = $this->subject->create();
+        $extConf = $this->subject->createExtConf();
 
         self::assertSame(
             [
@@ -263,12 +265,12 @@ class ExtConfFactoryTest extends FunctionalTestCase
                 'domain' => '134.example.com',
             ],
             [
-                'host' => $extConf->getHost(),
-                'port' => $extConf->getPort(),
-                'username' => $extConf->getUsername(),
-                'password' => $extConf->getPassword(),
-                'diskUsageType' => $extConf->getDiskUsageType(),
-                'domain' => $extConf->getDomain(),
+                'host' => $extConf->getCredentialsConfiguration()->getHost(),
+                'port' => $extConf->getCredentialsConfiguration()->getPort(),
+                'username' => $extConf->getCredentialsConfiguration()->getUsername(),
+                'password' => $extConf->getCredentialsConfiguration()->getPassword(),
+                'diskUsageType' => $extConf->getViewConfiguration()->getDiskUsageType(),
+                'domain' => $extConf->getViewConfiguration()->getDomain(),
             ]
         );
     }
@@ -285,7 +287,7 @@ class ExtConfFactoryTest extends FunctionalTestCase
                 'diskUsageType' => '',
             ]);
 
-        $extConf = $this->subject->create();
+        $extConf = $this->subject->createExtConf();
 
         self::assertSame(
             [
@@ -297,12 +299,12 @@ class ExtConfFactoryTest extends FunctionalTestCase
                 'domain' => '',
             ],
             [
-                'host' => $extConf->getHost(),
-                'port' => $extConf->getPort(),
-                'username' => $extConf->getUsername(),
-                'password' => $extConf->getPassword(),
-                'diskUsageType' => $extConf->getDiskUsageType(),
-                'domain' => $extConf->getDomain(),
+                'host' => $extConf->getCredentialsConfiguration()->getHost(),
+                'port' => $extConf->getCredentialsConfiguration()->getPort(),
+                'username' => $extConf->getCredentialsConfiguration()->getUsername(),
+                'password' => $extConf->getCredentialsConfiguration()->getPassword(),
+                'diskUsageType' => $extConf->getViewConfiguration()->getDiskUsageType(),
+                'domain' => $extConf->getViewConfiguration()->getDomain(),
             ]
         );
     }

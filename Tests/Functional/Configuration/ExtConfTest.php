@@ -12,8 +12,10 @@ declare(strict_types=1);
 namespace StefanFroemken\PleskWidget\Tests\Functional\Configuration;
 
 use PHPUnit\Framework\Attributes\Test;
+use StefanFroemken\PleskWidget\Configuration\CredentialsConfiguration;
 use StefanFroemken\PleskWidget\Configuration\DiskUsageTypeEnum;
 use StefanFroemken\PleskWidget\Configuration\ExtConf;
+use StefanFroemken\PleskWidget\Configuration\ViewConfiguration;
 use TypeError;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
@@ -33,24 +35,26 @@ class ExtConfTest extends FunctionalTestCase
     {
         parent::setUp();
 
-        $extensionSetting = [
-            'host' => 'plesk.example.com',
-            'port' => 1234,
-            'username' => 'mustermann',
-            'password' => 'very-cryptic',
-            'diskUsageType' => DiskUsageTypeEnum::from('MB'),
-            'domain' => '134.example.com',
-        ];
-
-        $this->subject = new ExtConf($extensionSetting);
+        $this->subject = new ExtConf(
+            new CredentialsConfiguration(
+                'plesk.example.com',
+                1234,
+                'mustermann',
+                'very-cryptic',
+            ),
+            new ViewConfiguration(
+                DiskUsageTypeEnum::from('MB'),
+                '134.example.com',
+            )
+        );
     }
 
     protected function tearDown(): void
     {
         unset(
-            $this->extensionConfigurationMock,
             $this->subject,
         );
+
         parent::tearDown();
     }
 
@@ -59,7 +63,7 @@ class ExtConfTest extends FunctionalTestCase
     {
         self::assertSame(
             'plesk.example.com',
-            $this->subject->getHost()
+            $this->subject->getCredentialsConfiguration()->getHost()
         );
     }
 
@@ -68,7 +72,7 @@ class ExtConfTest extends FunctionalTestCase
     {
         self::assertSame(
             1234,
-            $this->subject->getPort()
+            $this->subject->getCredentialsConfiguration()->getPort()
         );
     }
 
@@ -77,7 +81,7 @@ class ExtConfTest extends FunctionalTestCase
     {
         self::assertSame(
             'mustermann',
-            $this->subject->getUsername()
+            $this->subject->getCredentialsConfiguration()->getUsername()
         );
     }
 
@@ -86,7 +90,7 @@ class ExtConfTest extends FunctionalTestCase
     {
         self::assertSame(
             'very-cryptic',
-            $this->subject->getPassword()
+            $this->subject->getCredentialsConfiguration()->getPassword()
         );
     }
 
@@ -95,22 +99,7 @@ class ExtConfTest extends FunctionalTestCase
     {
         self::assertSame(
             'MB',
-            $this->subject->getDiskUsageType()
-        );
-    }
-
-    #[Test]
-    public function getDiskUsageWithInvalidValueWillThrowTypeError(): void
-    {
-        self::expectException(TypeError::class);
-
-        $subject = new ExtConf([
-            'diskUsageType' => 'INVALID',
-        ]);
-
-        self::assertSame(
-            'WillNotBeTested',
-            $subject->getDiskUsageType()
+            $this->subject->getViewConfiguration()->getDiskUsageType()
         );
     }
 
@@ -119,7 +108,7 @@ class ExtConfTest extends FunctionalTestCase
     {
         self::assertSame(
             '134.example.com',
-            $this->subject->getDomain()
+            $this->subject->getViewConfiguration()->getDomain()
         );
     }
 }

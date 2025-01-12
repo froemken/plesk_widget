@@ -16,52 +16,18 @@ namespace StefanFroemken\PleskWidget\Configuration;
  */
 readonly class ExtConf
 {
-    private string $host;
+    public function __construct(
+        private CredentialsConfiguration $credentialsConfiguration,
+        private ViewConfiguration $viewConfiguration
+    ) {}
 
-    private int $port;
-
-    private string $username;
-
-    private string $password;
-
-    private DiskUsageTypeEnum $diskUsageType;
-
-    private string $domain;
-
-    public function __construct(array $extensionSettings)
+    public function getCredentialsConfiguration(): CredentialsConfiguration
     {
-        foreach ($extensionSettings as $property => $value) {
-            $this->{$property} = $value;
-        }
+        return $this->credentialsConfiguration;
     }
 
-    public function getHost(): string
+    public function getViewConfiguration(): ViewConfiguration
     {
-        return $this->host;
-    }
-
-    public function getPort(): int
-    {
-        return $this->port;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    public function getDiskUsageType(): string
-    {
-        return $this->diskUsageType->value;
-    }
-
-    public function getDomain(): string
-    {
-        return $this->domain;
+        return $this->viewConfiguration;
     }
 }
