@@ -16,8 +16,6 @@ use StefanFroemken\PleskWidget\Builder\ExtConfBuilderFactory;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\Utility\MathUtility;
-use ValueError;
 
 readonly class ExtConfFactory
 {

@@ -78,11 +78,13 @@ class WebspaceDataProvider implements ChartDataProviderInterface
 
     private function calcDiskUsage(int $part, int $total = 0): float
     {
-        if ($this->extConf->getDiskUsageType() === '%' && $total !== 0) {
+        $diskUsageType = $this->extConf->getViewConfiguration()->getDiskUsageType();
+
+        if ($diskUsageType === '%' && $total !== 0) {
             $value = round(100 / $total * $part, 4);
-        } elseif ($this->extConf->getDiskUsageType() === 'MB') {
+        } elseif ($diskUsageType === 'MB') {
             $value = round($part / 1024 / 1024, 4);
-        } elseif ($this->extConf->getDiskUsageType() === 'GB') {
+        } elseif ($diskUsageType === 'GB') {
             $value = round($part / 1024 / 1024 / 1024, 4);
         } else {
             $value = (float)$part;

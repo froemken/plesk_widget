@@ -34,25 +34,31 @@ class PleskClientFactory
             );
         }
 
-        $pleskClient = new Client($this->extConf->getHost(), $this->extConf->getPort());
-        $pleskClient->setCredentials($this->extConf->getUsername(), $this->extConf->getPassword());
+        $pleskClient = new Client(
+            $this->extConf->getCredentialsConfiguration()->getHost(),
+            $this->extConf->getCredentialsConfiguration()->getPort()
+        );
+        $pleskClient->setCredentials(
+            $this->extConf->getCredentialsConfiguration()->getUsername(),
+            $this->extConf->getCredentialsConfiguration()->getPassword()
+        );
 
         return $pleskClient;
     }
 
     private function validateExtConf(): bool
     {
-        if ($this->extConf->getHost() === '') {
+        if ($this->extConf->getCredentialsConfiguration()->getHost() === '') {
             $this->logger->error('Plesk host in extension settings can not be empty');
             return false;
         }
 
-        if ($this->extConf->getUsername() === '') {
+        if ($this->extConf->getCredentialsConfiguration()->getUsername() === '') {
             $this->logger->error('Plesk user in extension settings can not be empty');
             return false;
         }
 
-        if ($this->extConf->getPassword() === '') {
+        if ($this->extConf->getCredentialsConfiguration()->getPassword() === '') {
             $this->logger->error('Plesk password in extension settings can not be empty');
             return false;
         }

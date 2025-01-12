@@ -60,8 +60,8 @@ class ServerWidget implements WidgetInterface, RequestAwareWidgetInterface
             $variables['button'] = $this->getButtonProvider($pleskClient, $externalIpAddress);
 
             if (
-                $this->extConf->getDomain()
-                && ($site = $this->pleskSiteService->getSiteByName($this->extConf->getDomain(), $pleskClient))
+                ($domain = $this->extConf->getViewConfiguration()->getDomain())
+                && ($site = $this->pleskSiteService->getSiteByName($domain, $pleskClient))
                 && $ipAddresses = $site->getHosting()->getIpAddresses()
             ) {
                 $variables['ipAddresses'] = $ipAddresses;
