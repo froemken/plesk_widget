@@ -50,7 +50,10 @@ final readonly class ExtConf
 
         // Overwrite default extension settings with values from EXT_CONF
         try {
-            $extensionSettings = array_merge($extensionSettings, $extensionConfiguration->get(self::EXT_KEY));
+            $extensionSettings = array_merge(
+                $extensionSettings,
+                $extensionConfiguration->get(self::EXT_KEY)
+            );
         } catch (ExtensionConfigurationExtensionNotConfiguredException|ExtensionConfigurationPathDoesNotExistException) {
         }
 
@@ -66,7 +69,7 @@ final readonly class ExtConf
 
         return new self(
             host: (string)$extensionSettings['host'],
-            port: (int)$extensionSettings['port'],
+            port: (int)$extensionSettings['port'] ?: self::DEFAULT_SETTINGS['port'],
             username: (string)$extensionSettings['username'],
             password: (string)$extensionSettings['password'],
             diskUsageType: $extensionSettings['diskUsageType'],

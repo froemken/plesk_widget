@@ -48,7 +48,7 @@ class PhpWidget implements WidgetInterface, RequestAwareWidgetInterface
 
         try {
             $pleskClient = $this->pleskClientFactory->create();
-            $domain = $this->extConf->getViewConfiguration()->getDomain();
+            $domain = $this->extConf->getDomain();
 
             if ($domain === '') {
                 $variables['error'] = 'You have to select a domain name in extension settings of EXT:plesk-widget.';

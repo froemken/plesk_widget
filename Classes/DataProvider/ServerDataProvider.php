@@ -37,7 +37,7 @@ class ServerDataProvider
                 $pleskClient->getHost(),
                 $pleskClient->getPort(),
                 $pleskClient->server()->createSession(
-                    $this->extConf->getCredentialsConfiguration()->getUsername(),
+                    $this->extConf->getUsername(),
                     $externalIpAddress
                 ),
                 '/smb/web/view'

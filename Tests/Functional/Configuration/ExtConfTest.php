@@ -11,11 +11,12 @@ declare(strict_types=1);
 
 namespace StefanFroemken\PleskWidget\Tests\Functional\Configuration;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use StefanFroemken\PleskWidget\Configuration\CredentialsConfiguration;
+use PHPUnit\Framework\MockObject\MockObject;
 use StefanFroemken\PleskWidget\Configuration\DiskUsageTypeEnum;
 use StefanFroemken\PleskWidget\Configuration\ExtConf;
-use StefanFroemken\PleskWidget\Configuration\ViewConfiguration;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
@@ -23,7 +24,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  */
 class ExtConfTest extends FunctionalTestCase
 {
-    protected ExtConf $subject;
+    protected ExtensionConfiguration|MockObject $extensionConfigurationMock;
 
     protected array $testExtensionsToLoad = [
         'typo3/cms-dashboard',
@@ -34,80 +35,135 @@ class ExtConfTest extends FunctionalTestCase
     {
         parent::setUp();
 
-        $this->subject = new ExtConf(
-            new CredentialsConfiguration(
-                'plesk.example.com',
-                1234,
-                'mustermann',
-                'very-cryptic',
-            ),
-            new ViewConfiguration(
-                DiskUsageTypeEnum::from('MB'),
-                '134.example.com',
-            )
-        );
+        $this->extensionConfigurationMock = $this->createMock(ExtensionConfiguration::class);
     }
 
     protected function tearDown(): void
     {
         unset(
-            $this->subject,
+            $this->extensionConfigurationMock,
         );
 
         parent::tearDown();
     }
 
-    #[Test]
-    public function getHostWillReturnHost(): void
+    public static function defaultValueDataProvider(): array
     {
-        self::assertSame(
-            'plesk.example.com',
-            $this->subject->getCredentialsConfiguration()->getHost()
-        );
+        return [
+            'expect default host to be empty' => ['getHost', ''],
+            'expect default port to be 8443' => ['getPort', 8443],
+            'expect default username to be empty' => ['getUsername', ''],
+            'expect default password to be empty' => ['getPassword', ''],
+            'expect default diskUsageType to be percent' => ['getDiskUsageType', DiskUsageTypeEnum::from('%')],
+            'expect default domain to be empty' => ['getDomain', ''],
+        ];
     }
 
     #[Test]
-    public function getPortWillReturnPortAsInt(): void
+    #[DataProvider('defaultValueDataProvider')]
+    public function extConfGettersWillInitiallyReturnDefaultValues(string $method, mixed $expectedDefaultValue): void
     {
+        $this->extensionConfigurationMock
+            ->expects(self::once())
+            ->method('get')
+            ->with(self::identicalTo('plesk_widget'))
+            ->willReturn([]);
+
         self::assertSame(
-            1234,
-            $this->subject->getCredentialsConfiguration()->getPort()
+            $expectedDefaultValue,
+            ExtConf::create($this->extensionConfigurationMock)->{$method}()
         );
     }
 
-    #[Test]
-    public function getUsernameWillReturnUsername(): void
+    public static function extensionSettingsDataProvider(): array
     {
-        self::assertSame(
-            'mustermann',
-            $this->subject->getCredentialsConfiguration()->getUsername()
-        );
+        return [
+            'expect given host to be plesk.exmaple.com' => ['getHost', 'plesk.example.com'],
+            'expect given port to be 1234' => ['getPort', 1234],
+            'expect given username to be mustermann' => ['getUsername', 'mustermann'],
+            'expect given password to be very-cryptic' => ['getPassword', 'very-cryptic'],
+            'expect given diskUsageType to be MB' => ['getDiskUsageType', DiskUsageTypeEnum::from('MB')],
+            'expect given domain to be example.com' => ['getDomain', 'example.com'],
+        ];
     }
 
     #[Test]
-    public function getPasswordWillReturnPassword(): void
+    #[DataProvider('extensionSettingsDataProvider')]
+    public function extConfGettersWillReturnValuesFromExtConf(string $method, mixed $expectedDefaultValue): void
     {
+        $this->extensionConfigurationMock
+            ->expects(self::once())
+            ->method('get')
+            ->with(self::identicalTo('plesk_widget'))
+            ->willReturn([
+                'host' => 'plesk.example.com',
+                'port' => 1234,
+                'username' => 'mustermann',
+                'password' => 'very-cryptic',
+                'diskUsageType' => 'MB',
+                'domain' => 'example.com',
+            ]);
+
         self::assertSame(
-            'very-cryptic',
-            $this->subject->getCredentialsConfiguration()->getPassword()
+            $expectedDefaultValue,
+            ExtConf::create($this->extensionConfigurationMock)->{$method}()
         );
     }
 
-    #[Test]
-    public function getDiskUsageTypeWillReturnDiskUsageType(): void
+    public static function portDataProvider(): array
     {
-        self::assertSame(
-            'MB',
-            $this->subject->getViewConfiguration()->getDiskUsageType()
-        );
+        return [
+            'Port as string will be casted to integer' => ['5378', 5378],
+            'Invalid port will return default port' => ['Hello World!', 8443],
+            'Empty port will return default port' => ['', 8443],
+            'Zero port will return default port' => [0, 8443],
+        ];
     }
 
     #[Test]
-    public function getDomainWillReturnDomain(): void
+    #[DataProvider('portDataProvider')]
+    public function getPortWillReturnExpectedValues(mixed $port, int $expectedPort): void
     {
+        $this->extensionConfigurationMock
+            ->expects(self::once())
+            ->method('get')
+            ->with(self::identicalTo('plesk_widget'))
+            ->willReturn([
+                'port' => $port,
+            ]);
+
         self::assertSame(
-            '134.example.com',
-            $this->subject->getViewConfiguration()->getDomain()
+            $expectedPort,
+            ExtConf::create($this->extensionConfigurationMock)->getPort()
+        );
+    }
+
+    public static function diskUsageTypeDataProvider(): array
+    {
+        return [
+            'DiskUsageType with MB' => ['MB', 'MB'],
+            'DiskUsageType with GB' => ['GB', 'GB'],
+            'DiskUsageType with %' => ['%', '%'],
+            'Empty DiskUsageType will return default value' => ['', '%'],
+            'Invalid DiskUsageType will return default value' => ['Hello World!', '%'],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('diskUsageTypeDataProvider')]
+    public function getDiskUsageTypeWillReturnExpectedValues(mixed $diskUsageType, string $expectedDiskUsageType): void
+    {
+        $this->extensionConfigurationMock
+            ->expects(self::once())
+            ->method('get')
+            ->with(self::identicalTo('plesk_widget'))
+            ->willReturn([
+                'diskUsageType' => $diskUsageType,
+            ]);
+
+        self::assertSame(
+            $expectedDiskUsageType,
+            ExtConf::create($this->extensionConfigurationMock)->getDiskUsageType()->value
         );
     }
 }

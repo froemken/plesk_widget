@@ -78,7 +78,7 @@ class WebspaceDataProvider implements ChartDataProviderInterface
 
     private function calcDiskUsage(int $part, int $total = 0): float
     {
-        $diskUsageType = $this->extConf->getViewConfiguration()->getDiskUsageType();
+        $diskUsageType = $this->extConf->getDiskUsageType()->value;
 
         if ($diskUsageType === '%' && $total !== 0) {
             $value = round(100 / $total * $part, 4);
