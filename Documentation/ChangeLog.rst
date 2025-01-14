@@ -6,6 +6,13 @@
 ChangeLog
 =========
 
+**Version 2.0.1**
+
+*   Update documentation
+*   Add images to documentation
+*   New implementation to read from extension settings
+*   Add functional tests
+
 **Version 2.0.0**
 
 *   Add TYPO3 12 compatibility
