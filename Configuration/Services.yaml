@@ -45,9 +45,6 @@ services:
         iconIdentifier: 'ext-plesk-widget-icon'
         height: 'medium'
 
-  StefanFroemken\PleskWidget\Configuration\ExtConf:
-    factory: ['@StefanFroemken\PleskWidget\Configuration\ExtConfFactory', 'createExtConf']
-
   StefanFroemken\PleskWidget\Service\PleskSiteService:
     arguments:
       $cache: '@cache.runtime'
