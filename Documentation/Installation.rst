@@ -1,5 +1,4 @@
-..  include:: /Includes.rst.txt
-
+:navigation-title: Installation
 
 ..  _installation:
 
@@ -7,8 +6,10 @@
 Installation
 ============
 
-Composer
-========
+..  _installation-composer:
+
+Install with Composer
+=====================
 
 If your TYPO3 installation works in composer mode, please execute following
 command:
@@ -25,8 +26,12 @@ If you work with DDEV please execute this command:
     ddev composer req stefanfroemken/plesk-widget
     ddev exec vendor/bin/typo3 extension:setup --extension=plesk_widget
 
-ExtensionManager
-================
+See also `Installing extensions, TYPO3 Getting started <https://docs.typo3.org/permalink/t3start:installing-extensions>`_.
+
+..  _installation-classic:
+
+Install in Classic Mode
+=======================
 
 On non composer based TYPO3 installations you can install `plesk_widget` still
 over the ExtensionManager:
@@ -51,6 +56,8 @@ over the ExtensionManager:
 
     Use the search field to find `plesk_widget`. Choose the `plesk_widget` line from
     the search result and click on the cloud icon to install `plesk_widget`.
+
+..  _installation-next-step:
 
 Next step
 =========
