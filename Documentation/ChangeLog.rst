@@ -1,5 +1,4 @@
-..  include:: /Includes.rst.txt
-
+:navigation-title: ChangeLog
 
 ..  _changelog:
 
