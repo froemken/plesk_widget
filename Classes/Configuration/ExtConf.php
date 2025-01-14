@@ -57,12 +57,13 @@ final readonly class ExtConf
         } catch (ExtensionConfigurationExtensionNotConfiguredException|ExtensionConfigurationPathDoesNotExistException) {
         }
 
-        // Make sure port is integer. Else: Use default value
+        // Make sure port is interpretable as integer. Else: Keep default value
         if (!MathUtility::canBeInterpretedAsInteger($extensionSettings['port'])) {
             $extensionSettings['port'] = self::DEFAULT_SETTINGS['port'];
         }
 
-        // Convert value to DiskUsageType enum. If not found use default value to convert to DiskUsageType
+        // Try to convert diskUsageType to DiskUsageTypeEnum.
+        // If "try" fails to null, convert default value to DiskUsageType
         if (($extensionSettings['diskUsageType'] = DiskUsageTypeEnum::tryFrom($extensionSettings['diskUsageType'])) === null) {
             $extensionSettings['diskUsageType'] = DiskUsageTypeEnum::from(self::DEFAULT_SETTINGS['diskUsageType']);
         }
