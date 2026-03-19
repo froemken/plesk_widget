@@ -1,25 +1,20 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Webspace;
 
-class PermissionDescriptor extends \PleskX\Api\Struct
-{
-    /** @var array */
-    public $permissions;
+use PleskX\Api\AbstractStruct;
 
-    public function __construct($apiResponse)
+class PermissionDescriptor extends AbstractStruct
+{
+    public array $permissions;
+
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
         $this->permissions = [];
 
-        foreach ($apiResponse->descriptor->property as $propertyInfo) {
-            $this->permissions[(string)$propertyInfo->name] = new PermissionInfo($propertyInfo);
+        foreach ($apiResponse->descriptor->property ?? [] as $propertyInfo) {
+            $this->permissions[(string) $propertyInfo->name] = new PermissionInfo($propertyInfo);
         }
     }
 }

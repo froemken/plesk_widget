@@ -13,53 +13,60 @@ namespace StefanFroemken\PleskWidget\Client;
 
 use PleskX\Api\Client;
 use Psr\Log\LoggerInterface;
-use StefanFroemken\PleskWidget\Configuration\ExtConf;
+use StefanFroemken\PleskWidget\Service\PleskServerRecordService;
+use TYPO3\CMS\Core\Domain\Record;
+use TYPO3\CMS\Core\Utility\MathUtility;
 
-class PleskClientFactory
+readonly class PleskClientFactory
 {
     public function __construct(
-        private readonly ExtConf $extConf,
-        private readonly LoggerInterface $logger
+        private PleskServerRecordService $pleskServerRecordService,
+        private LoggerInterface $logger,
     ) {}
 
     /**
      * @throws ExtensionSettingException
      */
-    public function create(): Client
+    public function create(Record $record): Client
     {
-        if ($this->validateExtConf() === false) {
+        if ($this->validateRecord($record) === false) {
             throw new ExtensionSettingException(
                 'Incomplete plesk widget extension settings. See logs for more details',
-                1736610959
+                1736610959,
             );
         }
 
         $pleskClient = new Client(
-            $this->extConf->getHost(),
-            $this->extConf->getPort()
+            $record->get('host'),
+            (int)$record->get('port'),
         );
         $pleskClient->setCredentials(
-            $this->extConf->getUsername(),
-            $this->extConf->getPassword()
+            $record->get('username'),
+            $record->get('password'),
         );
 
         return $pleskClient;
     }
 
-    private function validateExtConf(): bool
+    private function validateRecord(Record $record): bool
     {
-        if ($this->extConf->getHost() === '') {
-            $this->logger->error('Plesk host in extension settings can not be empty');
+        if ($record->get('host') === '') {
+            $this->logger->error('Plesk host must not be empty');
             return false;
         }
 
-        if ($this->extConf->getUsername() === '') {
-            $this->logger->error('Plesk user in extension settings can not be empty');
+        if (!MathUtility::canBeInterpretedAsInteger($record->get('port'))) {
+            $this->logger->error('Plesk server port must be a valid integer');
             return false;
         }
 
-        if ($this->extConf->getPassword() === '') {
-            $this->logger->error('Plesk password in extension settings can not be empty');
+        if ($record->get('username') === '') {
+            $this->logger->error('Plesk username must not be empty');
+            return false;
+        }
+
+        if ($record->get('password') === '') {
+            $this->logger->error('Plesk password must not be empty');
             return false;
         }
 

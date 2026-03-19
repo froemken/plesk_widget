@@ -1,11 +1,5 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Operator;
 
@@ -21,17 +15,19 @@ class Locale extends \PleskX\Api\Operator
     public function get($id = null)
     {
         $locales = [];
-        $packet = $this->_client->getPacket();
-        $filter = $packet->addChild($this->_wrapperTag)->addChild('get')->addChild('filter');
+        $packet = $this->client->getPacket();
+        $filter = $packet->addChild($this->wrapperTag)->addChild('get')->addChild('filter');
 
         if (!is_null($id)) {
             $filter->addChild('id', $id);
         }
 
-        $response = $this->_client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
+        $response = $this->client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
 
-        foreach ($response->locale->get->result as $localeInfo) {
-            $locales[(string)$localeInfo->info->id] = new Struct\Info($localeInfo->info);
+        foreach ($response->locale->get->result ?? [] as $localeInfo) {
+            if (!is_null($localeInfo->info)) {
+                $locales[(string) $localeInfo->info->id] = new Struct\Info($localeInfo->info);
+            }
         }
 
         return !is_null($id) ? reset($locales) : $locales;

@@ -1,51 +1,35 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Ui;
 
-class CustomButton extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class CustomButton extends AbstractStruct
 {
-    /** @var string */
-    public $id;
+    public int $id;
+    public int $sortKey;
+    public bool $public;
+    public bool $internal;
+    public bool $noFrame;
+    public string $place;
+    public string $url;
+    public string $text;
 
-    /** @var int */
-    public $sortKey;
-
-    /** @var bool */
-    public $public;
-
-    /** @var bool */
-    public $internal;
-
-    /** @var bool */
-    public $noFrame;
-
-    /** @var string */
-    public $place;
-
-    /** @var string */
-    public $url;
-
-    /** @var string */
-    public $text;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, ['id']);
-        $this->_initScalarProperties($apiResponse->properties, [
-            'sort_key',
-            'public',
-            'internal',
-            ['noframe' => 'noFrame'],
-            'place',
-            'url',
-            'text',
-        ]);
+        $this->initScalarProperties($apiResponse, ['id']);
+
+        if (!is_null($apiResponse->properties)) {
+            $this->initScalarProperties($apiResponse->properties, [
+                'sort_key',
+                'public',
+                'internal',
+                ['noframe' => 'noFrame'],
+                'place',
+                'url',
+                'text',
+            ]);
+        }
     }
 }

@@ -1,38 +1,29 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Reseller;
 
-class GeneralInfo extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class GeneralInfo extends AbstractStruct
 {
-    /** @var int */
-    public $id;
+    public int $id;
+    public string $personalName;
+    public string $login;
+    public array $permissions;
 
-    /** @var string */
-    public $personalName;
-
-    /** @var string */
-    public $login;
-
-    /** @var array */
-    public $permissions;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse->{'gen-info'}, [
-            ['pname' => 'personalName'],
-            'login',
-        ]);
+        if (!is_null($apiResponse->{'gen-info'})) {
+            $this->initScalarProperties($apiResponse->{'gen-info'}, [
+                ['pname' => 'personalName'],
+                'login',
+            ]);
+        }
 
         $this->permissions = [];
-        foreach ($apiResponse->permissions->permission as $permissionInfo) {
-            $this->permissions[(string)$permissionInfo->name] = (string)$permissionInfo->value;
+        foreach ($apiResponse->permissions->permission ?? [] as $permissionInfo) {
+            $this->permissions[(string) $permissionInfo->name] = (string) $permissionInfo->value;
         }
     }
 }

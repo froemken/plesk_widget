@@ -7,9 +7,11 @@
  * LICENSE file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
+
 return [
     'ext-plesk-widget-icon' => [
-        'provider' => \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+        'provider' => SvgIconProvider::class,
         'source' => 'EXT:plesk_widget/Resources/Public/Icons/plesk.svg',
     ],
 ];

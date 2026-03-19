@@ -1,54 +1,27 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
-
-// Author: Frederic Leclercq
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Webspace;
 
-class DiskUsage extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class DiskUsage extends AbstractStruct
 {
-    /** @var int */
-    public $httpdocs;
+    public int $httpdocs;
+    public int $httpsdocs;
+    public int $subdomains;
+    public int $anonftp;
+    public int $logs;
+    public int $dbases;
+    public int $mailboxes;
+    public int $maillists;
+    public int $domaindumps;
+    public int $configs;
+    public int $chroot;
 
-    /** @var int */
-    public $httpsdocs;
-
-    /** @var int */
-    public $subdomains;
-
-    /** @var int */
-    public $anonftp;
-
-    /** @var int */
-    public $logs;
-
-    /** @var int */
-    public $dbases;
-
-    /** @var int */
-    public $mailboxes;
-
-    /** @var int */
-    public $maillists;
-
-    /** @var int */
-    public $domaindumps;
-
-    /** @var int */
-    public $configs;
-
-    /** @var int */
-    public $chroot;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             'httpdocs',
             'httpsdocs',
             'subdomains',

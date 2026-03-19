@@ -1,11 +1,5 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Operator;
 
@@ -13,17 +7,17 @@ use PleskX\Api\Struct\EventLog as Struct;
 
 class EventLog extends \PleskX\Api\Operator
 {
-    protected $_wrapperTag = 'event_log';
+    protected string $wrapperTag = 'event_log';
 
     /**
      * @return Struct\Event[]
      */
-    public function get()
+    public function get(): array
     {
         $records = [];
         $response = $this->request('get');
 
-        foreach ($response->event as $eventInfo) {
+        foreach ($response->event ?? [] as $eventInfo) {
             $records[] = new Struct\Event($eventInfo);
         }
 
@@ -33,23 +27,20 @@ class EventLog extends \PleskX\Api\Operator
     /**
      * @return Struct\DetailedEvent[]
      */
-    public function getDetailedLog()
+    public function getDetailedLog(): array
     {
         $records = [];
         $response = $this->request('get_events');
 
-        foreach ($response->event as $eventInfo) {
+        foreach ($response->event ?? [] as $eventInfo) {
             $records[] = new Struct\DetailedEvent($eventInfo);
         }
 
         return $records;
     }
 
-    /**
-     * @return int
-     */
-    public function getLastId()
+    public function getLastId(): int
     {
-        return (int)$this->request('get-last-id')->getValue('id');
+        return (int) $this->request('get-last-id')->getValue('id');
     }
 }

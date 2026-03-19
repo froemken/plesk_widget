@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
+  <file id="plesk-widget-tca">
+    <unit id="extension.title">
+      <segment state="final">
+        <source>Plesk Widget</source>
+      </segment>
+    </unit>
+
+    <unit id="palette.title">
+      <segment state="final">
+        <source>Plesk Server record title</source>
+      </segment>
+    </unit>
+    <unit id="palette.pleskServer">
+      <segment state="final">
+        <source>Plesk Server settings</source>
+      </segment>
+    </unit>
+    <unit id="palette.pleskCredentials">
+      <segment state="final">
+        <source>Plesk access credentials</source>
+      </segment>
+    </unit>
+    <unit id="palette.domain">
+      <segment state="final">
+        <source>Domain data retrieval</source>
+      </segment>
+    </unit>
+
+    <unit id="pleskServer">
+      <segment state="final">
+        <source>Plesk Server</source>
+      </segment>
+    </unit>
+
+    <unit id="title">
+      <segment state="final">
+        <source>Title</source>
+      </segment>
+    </unit>
+    <unit id="title.description">
+      <segment state="final">
+        <source>Internal name used to identify this Plesk server within the system.</source>
+      </segment>
+    </unit>
+    <unit id="host">
+      <segment state="final">
+        <source>Plesk hostname</source>
+      </segment>
+    </unit>
+    <unit id="host.description">
+      <segment state="final">
+        <source>The hostname of the Plesk server excluding scheme, port or path.</source>
+      </segment>
+    </unit>
+    <unit id="port">
+      <segment state="final">
+        <source>Plesk port</source>
+      </segment>
+    </unit>
+    <unit id="port.description">
+      <segment state="final">
+        <source>The connection port for the Plesk server. The default port is 8443.</source>
+      </segment>
+    </unit>
+    <unit id="username">
+      <segment state="final">
+        <source>Plesk username</source>
+      </segment>
+    </unit>
+    <unit id="username.description">
+      <segment state="final">
+        <source>The username for authentication on the Plesk server.</source>
+      </segment>
+    </unit>
+    <unit id="password">
+      <segment state="final">
+        <source>Plesk password</source>
+      </segment>
+    </unit>
+    <unit id="password.description">
+      <segment state="final">
+        <source>The password for the Plesk account. This value is encrypted before database storage.</source>
+      </segment>
+    </unit>
+    <unit id="domain">
+      <segment state="final">
+        <source>Domain</source>
+      </segment>
+    </unit>
+    <unit id="domain.description">
+      <segment state="final">
+        <source>Retrieves specific data such as PHP information for the registered domain on the Plesk server.</source>
+      </segment>
+    </unit>
+  </file>
+</xliff>

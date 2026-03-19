@@ -1,25 +1,20 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Webspace;
 
-class PhpSettings extends \PleskX\Api\Struct
-{
-    /** @var array */
-    public $properties;
+use PleskX\Api\AbstractStruct;
 
-    public function __construct($apiResponse)
+class PhpSettings extends AbstractStruct
+{
+    public array $properties;
+
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
         $this->properties = [];
 
-        foreach ($apiResponse->webspace->get->result->data->{'php-settings'}->setting as $setting) {
-            $this->properties[(string)$setting->name] = (string)$setting->value;
+        foreach ($apiResponse->webspace->get->result->data->{'php-settings'}->setting ?? [] as $setting) {
+            $this->properties[(string) $setting->name] = (string) $setting->value;
         }
     }
 }

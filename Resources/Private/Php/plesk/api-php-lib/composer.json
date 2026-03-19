@@ -9,26 +9,36 @@
             "email": "sibprogrammer@gmail.com"
         },
         {
-            "name": "Plesk International GmbH.",
+            "name": "WebPros International GmbH.",
             "email": "plesk-dev-leads@plesk.com"
         }
     ],
     "require": {
-        "php": "^7.3 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "ext-curl": "*",
         "ext-xml": "*",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "ext-dom": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9",
-        "spatie/phpunit-watcher": "^1.22"
+        "spatie/phpunit-watcher": "^1.22",
+        "vimeo/psalm": "^4.10 || ^5.0",
+        "squizlabs/php_codesniffer": "^3.6"
     },
     "config": {
-        "process-timeout": 0
+        "process-timeout": 0,
+        "platform": {
+            "php": "7.4.27"
+        }
     },
     "scripts": {
         "test": "phpunit",
-        "test:watch": "phpunit-watcher watch"
+        "test:watch": "phpunit-watcher watch",
+        "lint": [
+            "psalm",
+            "phpcs"
+        ]
     },
     "autoload": {
         "psr-4": {

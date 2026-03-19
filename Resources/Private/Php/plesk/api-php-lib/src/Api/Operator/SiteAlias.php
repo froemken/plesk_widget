@@ -1,11 +1,5 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Operator;
 
@@ -13,26 +7,23 @@ use PleskX\Api\Struct\SiteAlias as Struct;
 
 class SiteAlias extends \PleskX\Api\Operator
 {
-    /**
-     * @return Struct\Info
-     */
-    public function create(array $properties, array $preferences = [])
+    public function create(array $properties, array $preferences = []): Struct\Info
     {
-        $packet = $this->_client->getPacket();
-        $info = $packet->addChild($this->_wrapperTag)->addChild('create');
+        $packet = $this->client->getPacket();
+        $info = $packet->addChild($this->wrapperTag)->addChild('create');
 
         if (count($preferences) > 0) {
             $prefs = $info->addChild('pref');
 
             foreach ($preferences as $key => $value) {
-                $prefs->addChild($key, is_bool($value) ? ($value ? 1 : 0) : $value);
+                $prefs->addChild($key, is_bool($value) ? ($value ? '1' : '0') : $value);
             }
         }
 
         $info->addChild('site-id', $properties['site-id']);
         $info->addChild('name', $properties['name']);
 
-        $response = $this->_client->request($packet);
+        $response = $this->client->request($packet);
 
         return new Struct\Info($response);
     }
@@ -43,9 +34,9 @@ class SiteAlias extends \PleskX\Api\Operator
      *
      * @return bool
      */
-    public function delete($field, $value)
+    public function delete(string $field, $value): bool
     {
-        return $this->_delete($field, $value, 'delete');
+        return $this->deleteBy($field, $value, 'delete');
     }
 
     /**
@@ -54,7 +45,7 @@ class SiteAlias extends \PleskX\Api\Operator
      *
      * @return Struct\GeneralInfo
      */
-    public function get($field, $value)
+    public function get(string $field, $value): Struct\GeneralInfo
     {
         $items = $this->getAll($field, $value);
 
@@ -67,21 +58,26 @@ class SiteAlias extends \PleskX\Api\Operator
      *
      * @return Struct\GeneralInfo[]
      */
-    public function getAll($field = null, $value = null)
+    public function getAll($field = null, $value = null): array
     {
-        $packet = $this->_client->getPacket();
-        $getTag = $packet->addChild($this->_wrapperTag)->addChild('get');
+        $packet = $this->client->getPacket();
+        $getTag = $packet->addChild($this->wrapperTag)->addChild('get');
 
         $filterTag = $getTag->addChild('filter');
         if (!is_null($field)) {
-            $filterTag->{$field} = $value;
+            $filterTag->{$field} = (string) $value;
         }
 
-        $response = $this->_client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
+        $response = $this->client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
         $items = [];
-        foreach ($response->xpath('//result') as $xmlResult) {
-            $item = new Struct\GeneralInfo($xmlResult->info);
-            $items[] = $item;
+        foreach ((array) $response->xpath('//result') as $xmlResult) {
+            if (!$xmlResult) {
+                continue;
+            }
+            if (!is_null($xmlResult->info)) {
+                $item = new Struct\GeneralInfo($xmlResult->info);
+                $items[] = $item;
+            }
         }
 
         return $items;

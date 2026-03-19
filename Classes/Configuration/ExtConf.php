@@ -27,21 +27,11 @@ final readonly class ExtConf
     private const EXT_KEY = 'plesk_widget';
 
     private const DEFAULT_SETTINGS = [
-        'host' => '',
-        'port' => 8443,
-        'username' => '',
-        'password' => '',
         'diskUsageType' => '%',
-        'domain' => '',
     ];
 
     public function __construct(
-        private string $host,
-        private int $port,
-        private string $username,
-        private string $password,
         private DiskUsageTypeEnum $diskUsageType,
-        private string $domain,
     ) {}
 
     public static function create(ExtensionConfiguration $extensionConfiguration): self
@@ -57,11 +47,6 @@ final readonly class ExtConf
         } catch (ExtensionConfigurationExtensionNotConfiguredException|ExtensionConfigurationPathDoesNotExistException) {
         }
 
-        // Make sure port is interpretable as integer. Else: Keep default value
-        if (!MathUtility::canBeInterpretedAsInteger($extensionSettings['port'])) {
-            $extensionSettings['port'] = self::DEFAULT_SETTINGS['port'];
-        }
-
         // Try to convert diskUsageType to DiskUsageTypeEnum.
         // If "try" fails to null, convert default value to DiskUsageType
         if (($extensionSettings['diskUsageType'] = DiskUsageTypeEnum::tryFrom($extensionSettings['diskUsageType'])) === null) {
@@ -69,42 +54,12 @@ final readonly class ExtConf
         }
 
         return new self(
-            host: (string)$extensionSettings['host'],
-            port: (int)$extensionSettings['port'] ?: self::DEFAULT_SETTINGS['port'],
-            username: (string)$extensionSettings['username'],
-            password: (string)$extensionSettings['password'],
             diskUsageType: $extensionSettings['diskUsageType'],
-            domain: (string)$extensionSettings['domain'],
         );
-    }
-
-    public function getHost(): string
-    {
-        return $this->host;
-    }
-
-    public function getPort(): int
-    {
-        return $this->port;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
     }
 
     public function getDiskUsageType(): DiskUsageTypeEnum
     {
         return $this->diskUsageType;
-    }
-
-    public function getDomain(): string
-    {
-        return $this->domain;
     }
 }

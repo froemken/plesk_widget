@@ -11,46 +11,98 @@ declare(strict_types=1);
 
 namespace StefanFroemken\PleskWidget\Widget;
 
-use Psr\Http\Message\ServerRequestInterface;
-use StefanFroemken\PleskWidget\Configuration\ExtConf;
 use StefanFroemken\PleskWidget\DataProvider\WebspaceDataProvider;
+use StefanFroemken\PleskWidget\Service\PleskServerRecordService;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
+use TYPO3\CMS\Core\Settings\SettingDefinition;
 use TYPO3\CMS\Dashboard\Widgets\AdditionalCssInterface;
 use TYPO3\CMS\Dashboard\Widgets\EventDataInterface;
 use TYPO3\CMS\Dashboard\Widgets\JavaScriptInterface;
-use TYPO3\CMS\Dashboard\Widgets\RequestAwareWidgetInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetConfigurationInterface;
-use TYPO3\CMS\Dashboard\Widgets\WidgetInterface;
+use TYPO3\CMS\Dashboard\Widgets\WidgetContext;
+use TYPO3\CMS\Dashboard\Widgets\WidgetRendererInterface;
+use TYPO3\CMS\Dashboard\Widgets\WidgetResult;
 
-class WebspaceWidget implements WidgetInterface, EventDataInterface, JavaScriptInterface, AdditionalCssInterface, RequestAwareWidgetInterface
+class WebspaceWidget implements WidgetRendererInterface, EventDataInterface, JavaScriptInterface, AdditionalCssInterface
 {
-    private ServerRequestInterface $request;
+    /**
+     * Stateless is not possible here, as we need this widget context in getEventData later
+     *
+     * @var WidgetContext|null
+     */
+    private ?WidgetContext $widgetContext = null;
 
     public function __construct(
         private readonly WidgetConfigurationInterface $configuration,
+        private readonly PleskServerRecordService $pleskServerRecordService,
         private readonly BackendViewFactory $backendViewFactory,
         private readonly WebspaceDataProvider $dataProvider,
-        private readonly ExtConf $extConf,
-        private readonly array $options = []
     ) {}
 
-    public function setRequest(ServerRequestInterface $request): void
+    public function getSettingsDefinitions(): array
     {
-        $this->request = $request;
+        return [
+            new SettingDefinition(
+                key: 'pleskServer',
+                type: 'int',
+                default: 0,
+                label: 'plesk_widget.widget:pleskServer',
+                description: 'plesk_widget.widget:pleskServer.description',
+                enum: $this->pleskServerRecordService->getPleskServerRecordsEnum(),
+            ),
+            new SettingDefinition(
+                key: 'unit',
+                type: 'string',
+                default: '%',
+                label: 'plesk_widget.widget:unit',
+                description: 'plesk_widget.widget:unit.description',
+                enum: [
+                    '%' => 'Percentage',
+                    'mb' => 'MegaByte',
+                    'gb' => 'GigaByte',
+                ],
+            ),
+        ];
     }
 
-    public function renderWidgetContent(): string
+    public function renderWidget(WidgetContext $context): WidgetResult
     {
-        $view = $this->backendViewFactory->create($this->request);
+        $this->widgetContext = $context;
 
-        $view->assign('configuration', $this->configuration);
+        $error = '';
+        $pleskServerRecordUid = (int)$context->settings->get('pleskServer');
 
-        return $view->render('Widget/Webspace');
+        if ($pleskServerRecordUid === 0) {
+            $error = 'Please use the configuration icon to select a Plesk server record '
+                . 'created on the TYPO3 root page (ID 0).';
+        } elseif (
+            ($pleskServerRecord = $this->pleskServerRecordService->getPleskServerRecord($pleskServerRecordUid))
+            && !$pleskServerRecord instanceof Record
+        ) {
+            $error = 'The selected Plesk server record (ID: ' . $pleskServerRecordUid . ') was not found.';
+        }
+
+        $view = $this->backendViewFactory->create($context->request);
+        $view->assignMultiple([
+            'configuration' => $context->configuration,
+            'error' => $error,
+        ]);
+
+        return new WidgetResult(
+            content: $view->render('Widget/Webspace'),
+            label: $context->configuration->getTitle(),
+            refreshable: true,
+        );
     }
 
     public function getEventData(): array
     {
+        $pleskServerRecord = $this->pleskServerRecordService->getPleskServerRecord(
+            (int)$this->widgetContext->settings->get('pleskServer'),
+        );
+
         return [
             'graphConfig' => [
                 'type' => 'doughnut',
@@ -63,7 +115,7 @@ class WebspaceWidget implements WidgetInterface, EventDataInterface, JavaScriptI
                         ],
                         'title' => [
                             'display' => true,
-                            'text' => 'Usage in ' . $this->extConf->getDiskUsageType()->value,
+                            'text' => 'Usage in ' . DisplayUnit::from($this->widgetContext->settings->get('unit'))->value,
                         ],
                         'tooltip' => [
                             'enabled' => true,
@@ -71,7 +123,7 @@ class WebspaceWidget implements WidgetInterface, EventDataInterface, JavaScriptI
                     ],
                     'cutoutPercentage' => 60,
                 ],
-                'data' => $this->dataProvider->getChartData(),
+                'data' => $this->dataProvider->getChartData($pleskServerRecord, $this->widgetContext),
             ],
         ];
     }
@@ -87,10 +139,5 @@ class WebspaceWidget implements WidgetInterface, EventDataInterface, JavaScriptI
             JavaScriptModuleInstruction::create('@typo3/dashboard/contrib/chartjs.js'),
             JavaScriptModuleInstruction::create('@typo3/dashboard/chart-initializer.js'),
         ];
-    }
-
-    public function getOptions(): array
-    {
-        return $this->options;
     }
 }

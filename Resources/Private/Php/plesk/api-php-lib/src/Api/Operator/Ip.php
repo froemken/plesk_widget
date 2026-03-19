@@ -1,11 +1,5 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Operator;
 
@@ -16,14 +10,14 @@ class Ip extends \PleskX\Api\Operator
     /**
      * @return Struct\Info[]
      */
-    public function get()
+    public function get(): array
     {
         $ips = [];
-        $packet = $this->_client->getPacket();
-        $packet->addChild($this->_wrapperTag)->addChild('get');
-        $response = $this->_client->request($packet);
+        $packet = $this->client->getPacket();
+        $packet->addChild($this->wrapperTag)->addChild('get');
+        $response = $this->client->request($packet);
 
-        foreach ($response->addresses->ip_info as $ipInfo) {
+        foreach ($response->addresses->ip_info ?? [] as $ipInfo) {
             $ips[] = new Struct\Info($ipInfo);
         }
 

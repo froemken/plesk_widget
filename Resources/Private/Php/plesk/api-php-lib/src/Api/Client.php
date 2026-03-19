@@ -1,14 +1,9 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api;
 
+use DOMDocument;
 use SimpleXMLElement;
 
 /**
@@ -19,21 +14,21 @@ class Client
     public const RESPONSE_SHORT = 1;
     public const RESPONSE_FULL = 2;
 
-    protected $_host;
-    protected $_port;
-    protected $_protocol;
-    protected $_login;
-    protected $_password;
-    protected $_proxy = '';
-    protected $_secretKey;
-    protected $_version = '';
+    private string $host;
+    private int $port;
+    private string $protocol;
+    protected string $login = '';
+    private string $password = '';
+    private string $proxy = '';
+    private string $secretKey = '';
+    private string $version = '';
 
-    protected $_operatorsCache = [];
+    protected array $operatorsCache = [];
 
     /**
-     * @var callable
+     * @var callable|null
      */
-    protected $_verifyResponseCallback;
+    protected $verifyResponseCallback;
 
     /**
      * Create client.
@@ -42,11 +37,11 @@ class Client
      * @param int $port
      * @param string $protocol
      */
-    public function __construct($host, $port = 8443, $protocol = 'https')
+    public function __construct(string $host, int $port = 8443, string $protocol = 'https')
     {
-        $this->_host = $host;
-        $this->_port = $port;
-        $this->_protocol = $protocol;
+        $this->host = $host;
+        $this->port = $port;
+        $this->protocol = $protocol;
     }
 
     /**
@@ -55,10 +50,10 @@ class Client
      * @param string $login
      * @param string $password
      */
-    public function setCredentials($login, $password)
+    public function setCredentials(string $login, string $password): void
     {
-        $this->_login = $login;
-        $this->_password = $password;
+        $this->login = $login;
+        $this->password = $password;
     }
 
     /**
@@ -66,9 +61,9 @@ class Client
      *
      * @param string $secretKey
      */
-    public function setSecretKey($secretKey)
+    public function setSecretKey(string $secretKey): void
     {
-        $this->_secretKey = $secretKey;
+        $this->secretKey = $secretKey;
     }
 
     /**
@@ -76,9 +71,9 @@ class Client
      *
      * @param string $proxy
      */
-    public function setProxy($proxy)
+    public function setProxy(string $proxy): void
     {
-        $this->_proxy = $proxy;
+        $this->proxy = $proxy;
     }
 
     /**
@@ -86,17 +81,20 @@ class Client
      *
      * @param string $version
      */
-    public function setVersion($version)
+    public function setVersion(string $version): void
     {
-        $this->_version = $version;
+        $this->version = $version;
     }
 
     /**
-     * Set custom function to verify response of API call according your own needs. Default verifying will be used if it is not specified.
+     * Set custom function to verify response of API call according your own needs.
+     * Default verifying will be used if it is not specified.
+     *
+     * @param callable|null $function
      */
-    public function setVerifyResponse(callable $function = null)
+    public function setVerifyResponse(?callable $function = null): void
     {
-        $this->_verifyResponseCallback = $function;
+        $this->verifyResponseCallback = $function;
     }
 
     /**
@@ -104,9 +102,9 @@ class Client
      *
      * @return string
      */
-    public function getHost()
+    public function getHost(): string
     {
-        return $this->_host;
+        return $this->host;
     }
 
     /**
@@ -114,9 +112,9 @@ class Client
      *
      * @return int
      */
-    public function getPort()
+    public function getPort(): int
     {
-        return $this->_port;
+        return $this->port;
     }
 
     /**
@@ -124,9 +122,9 @@ class Client
      *
      * @return string
      */
-    public function getProtocol()
+    public function getProtocol(): string
     {
-        return $this->_protocol;
+        return $this->protocol;
     }
 
     /**
@@ -136,11 +134,11 @@ class Client
      *
      * @return SimpleXMLElement
      */
-    public function getPacket($version = null)
+    public function getPacket($version = null): SimpleXMLElement
     {
-        $protocolVersion = !is_null($version) ? $version : $this->_version;
+        $protocolVersion = !is_null($version) ? $version : $this->version;
         $content = "<?xml version='1.0' encoding='UTF-8' ?>";
-        $content .= '<packet' . ($protocolVersion === '' ? '' : " version='$protocolVersion'") . '/>';
+        $content .= '<packet' . ('' === $protocolVersion ? '' : " version='$protocolVersion'") . '/>';
 
         return new SimpleXMLElement($content);
     }
@@ -152,8 +150,9 @@ class Client
      * @param int $mode
      *
      * @return XmlResponse
+     * @throws \Exception
      */
-    public function request($request, $mode = self::RESPONSE_SHORT)
+    public function request($request, int $mode = self::RESPONSE_SHORT): XmlResponse
     {
         if ($request instanceof SimpleXMLElement) {
             $request = $request->asXml();
@@ -161,25 +160,41 @@ class Client
             $xml = $this->getPacket();
 
             if (is_array($request)) {
-                $request = $this->_arrayToXml($request, $xml)->asXML();
+                $request = $this->arrayToXml($request, $xml)->asXML();
             } elseif (preg_match('/^[a-z]/', $request)) {
-                $request = $this->_expandRequestShortSyntax($request, $xml);
+                $request = $this->expandRequestShortSyntax($request, $xml);
             }
         }
 
-        if ($this->_protocol == 'sdk') {
-            $version = ($this->_version == '') ? null : $this->_version;
-            $requestXml = new SimpleXMLElement((string)$request);
-            $xml = \pm_ApiRpc::getService($version)->call($requestXml->children()[0]->asXml(), $this->_login);
+        if ('sdk' == $this->protocol) {
+            $xml = $this->performSdkCall((string) $request);
         } else {
-            $xml = $this->_performHttpRequest($request);
+            $xml = $this->performHttpRequest((string) $request);
         }
 
-        $this->_verifyResponseCallback
-            ? call_user_func($this->_verifyResponseCallback, $xml)
-            : $this->_verifyResponse($xml);
+        $this->verifyResponseCallback
+            ? call_user_func($this->verifyResponseCallback, $xml)
+            : $this->verifyResponse($xml);
 
-        return ($mode == self::RESPONSE_FULL) ? $xml : $xml->xpath('//result')[0];
+        $result = (self::RESPONSE_FULL === $mode)
+            ? $xml
+            : ($xml->xpath('//result') ?: [null])[0];
+
+        return new XmlResponse($result ? (string) $result->asXML() : '');
+    }
+
+    private function performSdkCall(string $request): XmlResponse
+    {
+        $version = ('' == $this->version) ? null : $this->version;
+
+        $requestXml = new SimpleXMLElement($request);
+        $innerNodes = $requestXml->children();
+        $innerXml = $innerNodes && count($innerNodes) > 0 && $innerNodes[0] ? $innerNodes[0]->asXml() : '';
+
+        /** @psalm-suppress UndefinedClass */
+        $result = \pm_ApiRpc::getService($version)->call($innerXml, $this->login);
+
+        return new XmlResponse($result ? (string) $result->asXML() : '');
     }
 
     /**
@@ -191,80 +206,117 @@ class Client
      *
      * @return XmlResponse
      */
-    private function _performHttpRequest($request)
+    private function performHttpRequest($request)
     {
         $curl = curl_init();
 
-        curl_setopt($curl, CURLOPT_URL, "$this->_protocol://$this->_host:$this->_port/enterprise/control/agent.php");
+        curl_setopt($curl, CURLOPT_URL, "$this->protocol://$this->host:$this->port/enterprise/control/agent.php");
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->_getHeaders());
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $this->getHeaders());
         curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
 
-        if ($this->_proxy !== '') {
-            curl_setopt($curl, CURLOPT_PROXY, $this->_proxy);
+        if ('' !== $this->proxy) {
+            curl_setopt($curl, CURLOPT_PROXY, $this->proxy);
         }
 
         $result = curl_exec($curl);
 
-        if ($result === false) {
+        if (false === $result) {
             throw new Client\Exception(curl_error($curl), curl_errno($curl));
         }
 
         curl_close($curl);
 
-        $xml = new XmlResponse($result);
-
-        return $xml;
+        return new XmlResponse((string) $result);
     }
 
     /**
      * Perform multiple API requests using single HTTP request.
      *
+     * @param array $requests
      * @param int $mode
      *
      * @throws Client\Exception
      *
      * @return array
      */
-    public function multiRequest($requests, $mode = self::RESPONSE_SHORT)
+    public function multiRequest(array $requests, int $mode = self::RESPONSE_SHORT): array
     {
         $requestXml = $this->getPacket();
 
         foreach ($requests as $request) {
             if ($request instanceof SimpleXMLElement) {
                 throw new Client\Exception('SimpleXML type of request is not supported for multi requests.');
+            } else {
+                if (is_array($request)) {
+                    $request = $this->arrayToXml($request, $requestXml)->asXML();
+                    if (!$request) {
+                        throw new Client\Exception('Failed to create an XML string for request');
+                    }
+                } elseif (preg_match('/^[a-z]/', $request)) {
+                    $this->expandRequestShortSyntax($request, $requestXml);
+                }
             }
-            if (is_array($request)) {
-                $request = $this->_arrayToXml($request, $requestXml)->asXML();
-            } elseif (preg_match('/^[a-z]/', $request)) {
-                $this->_expandRequestShortSyntax($request, $requestXml);
-            }
-
-            $responses[] = $this->request($request);
         }
 
-        if ($this->_protocol == 'sdk') {
+        if ('sdk' == $this->protocol) {
             throw new Client\Exception('Multi requests are not supported via SDK.');
+        } else {
+            $xmlString = $requestXml->asXML();
+            if (!$xmlString) {
+                throw new Client\Exception('Failed to create an XML string for request');
+            }
+            $responseXml = $this->performHttpRequest($xmlString);
         }
-        $responseXml = $this->_performHttpRequest($requestXml->asXML());
 
+        return $this->splitResponseToArray($responseXml, $mode);
+    }
+
+    private function splitResponseToArray(XmlResponse $responseXml, $mode = self::RESPONSE_SHORT): array
+    {
         $responses = [];
-        foreach ($responseXml->children() as $childNode) {
-            $xml = $this->getPacket();
-            $dom = dom_import_simplexml($xml)->ownerDocument;
+
+        $nodes = $responseXml->children();
+        if (!$nodes) {
+            return [];
+        }
+
+        foreach ($nodes as $childNode) {
+            $dom = $this->getDomDocument($this->getPacket());
+            if (!$dom) {
+                continue;
+            }
 
             $childDomNode = dom_import_simplexml($childNode);
-            $childDomNode = $dom->importNode($childDomNode, true);
-            $dom->documentElement->appendChild($childDomNode);
+            if (!is_null($childDomNode)) {
+                $childDomNode = $dom->importNode($childDomNode, true);
+                $dom->documentElement->appendChild($childDomNode);
+            }
 
             $response = simplexml_load_string($dom->saveXML());
-            $responses[] = ($mode == self::RESPONSE_FULL) ? $response : $response->xpath('//result')[0];
+            if (!$response) {
+                return [];
+            }
+
+            $responses[] = (self::RESPONSE_FULL == $mode)
+                ? $response
+                : ($response->xpath('//result') ?: [null])[0];
         }
 
         return $responses;
+    }
+
+    private function getDomDocument(SimpleXMLElement $xml): ?DOMDocument
+    {
+        $dom = dom_import_simplexml($xml);
+        if (is_null($dom)) {
+            return null;
+        }
+
+        return $dom->ownerDocument;
     }
 
     /**
@@ -272,18 +324,18 @@ class Client
      *
      * @return array
      */
-    protected function _getHeaders()
+    private function getHeaders()
     {
         $headers = [
             'Content-Type: text/xml',
             'HTTP_PRETTY_PRINT: TRUE',
         ];
 
-        if ($this->_secretKey) {
-            $headers[] = "KEY: $this->_secretKey";
+        if ($this->secretKey) {
+            $headers[] = "KEY: $this->secretKey";
         } else {
-            $headers[] = "HTTP_AUTH_LOGIN: $this->_login";
-            $headers[] = "HTTP_AUTH_PASSWD: $this->_password";
+            $headers[] = "HTTP_AUTH_LOGIN: $this->login";
+            $headers[] = "HTTP_AUTH_PASSWD: $this->password";
         }
 
         return $headers;
@@ -296,15 +348,15 @@ class Client
      *
      * @throws Exception
      */
-    protected function _verifyResponse($xml)
+    private function verifyResponse($xml): void
     {
-        if ($xml->system && $xml->system->status && (string)$xml->system->status == 'error') {
-            throw new Exception((string)$xml->system->errtext, (int)$xml->system->errcode);
+        if ($xml->system && $xml->system->status && 'error' == (string) $xml->system->status) {
+            throw new Exception((string) $xml->system->errtext, (int) $xml->system->errcode);
         }
 
         if ($xml->xpath('//status[text()="error"]') && $xml->xpath('//errcode') && $xml->xpath('//errtext')) {
-            $errorCode = (int)$xml->xpath('//errcode')[0];
-            $errorMessage = (string)$xml->xpath('//errtext')[0];
+            $errorCode = (int) ($xml->xpath('//errcode') ?: [null])[0];
+            $errorMessage = (string) ($xml->xpath('//errtext') ?: [null])[0];
 
             throw new Exception($errorMessage, $errorCode);
         }
@@ -314,21 +366,23 @@ class Client
      * Expand short syntax (some.method.call) into full XML representation.
      *
      * @param string $request
+     * @param SimpleXMLElement $xml
      *
-     * @return string
+     * @return false|string
      */
-    protected function _expandRequestShortSyntax($request, SimpleXMLElement $xml)
+    private function expandRequestShortSyntax($request, SimpleXMLElement $xml)
     {
         $parts = explode('.', $request);
         $node = $xml;
         $lastParts = end($parts);
 
         foreach ($parts as $part) {
+            // phpcs:ignore
             @list($name, $value) = explode('=', $part);
             if ($part !== $lastParts) {
                 $node = $node->addChild($name);
             } else {
-                $node->{$name} = (string)$value;
+                $node->{$name} = (string) $value;
             }
         }
 
@@ -338,18 +392,22 @@ class Client
     /**
      * Convert array to XML representation.
      *
+     * @param array $array
+     * @param SimpleXMLElement $xml
      * @param string $parentEl
      *
      * @return SimpleXMLElement
      */
-    protected function _arrayToXml(array $array, SimpleXMLElement $xml, $parentEl = null)
+    private function arrayToXml(array $array, SimpleXMLElement $xml, $parentEl = null)
     {
         foreach ($array as $key => $value) {
             $el = is_int($key) && $parentEl ? $parentEl : $key;
             if (is_array($value)) {
-                $this->_arrayToXml($value, $this->_isAssocArray($value) ? $xml->addChild($el) : $xml, $el);
+                $this->arrayToXml($value, $this->isAssocArray($value) ? $xml->addChild($el) : $xml, $el);
+            } elseif (!isset($xml->{$el})) {
+                $xml->{$el} = (string) $value;
             } else {
-                $xml->{$el} = (string)$value;
+                $xml->{$el}[] = (string) $value;
             }
         }
 
@@ -357,9 +415,11 @@ class Client
     }
 
     /**
+     * @param array $array
+     *
      * @return bool
      */
-    protected function _isAssocArray(array $array)
+    private function isAssocArray(array $array)
     {
         return $array && array_keys($array) !== range(0, count($array) - 1);
     }
@@ -367,231 +427,151 @@ class Client
     /**
      * @param string $name
      *
-     * @return \PleskX\Api\Operator
+     * @return mixed
      */
-    protected function _getOperator($name)
+    private function getOperator(string $name)
     {
-        if (!isset($this->_operatorsCache[$name])) {
+        if (!isset($this->operatorsCache[$name])) {
             $className = '\\PleskX\\Api\\Operator\\' . $name;
-            $this->_operatorsCache[$name] = new $className($this);
+            /** @psalm-suppress InvalidStringClass */
+            $this->operatorsCache[$name] = new $className($this);
         }
 
-        return $this->_operatorsCache[$name];
+        return $this->operatorsCache[$name];
     }
 
-    /**
-     * @return Operator\Server
-     */
-    public function server()
+    public function server(): Operator\Server
     {
-        return $this->_getOperator('Server');
+        return $this->getOperator('Server');
     }
 
-    /**
-     * @return Operator\Customer
-     */
-    public function customer()
+    public function customer(): Operator\Customer
     {
-        return $this->_getOperator('Customer');
+        return $this->getOperator('Customer');
     }
 
-    /**
-     * @return Operator\Webspace
-     */
-    public function webspace()
+    public function webspace(): Operator\Webspace
     {
-        return $this->_getOperator('Webspace');
+        return $this->getOperator('Webspace');
     }
 
-    /**
-     * @return Operator\Subdomain
-     */
-    public function subdomain()
+    public function subdomain(): Operator\Subdomain
     {
-        return $this->_getOperator('Subdomain');
+        return $this->getOperator('Subdomain');
     }
 
-    /**
-     * @return Operator\Dns
-     */
-    public function dns()
+    public function dns(): Operator\Dns
     {
-        return $this->_getOperator('Dns');
+        return $this->getOperator('Dns');
     }
 
-    /**
-     * @return Operator\DnsTemplate
-     */
-    public function dnsTemplate()
+    public function dnsTemplate(): Operator\DnsTemplate
     {
-        return $this->_getOperator('DnsTemplate');
+        return $this->getOperator('DnsTemplate');
     }
 
-    /**
-     * @return Operator\DatabaseServer
-     */
-    public function databaseServer()
+    public function databaseServer(): Operator\DatabaseServer
     {
-        return $this->_getOperator('DatabaseServer');
+        return $this->getOperator('DatabaseServer');
     }
 
-    /**
-     * @return Operator\Mail
-     */
-    public function mail()
+    public function mail(): Operator\Mail
     {
-        return $this->_getOperator('Mail');
+        return $this->getOperator('Mail');
     }
 
-    /**
-     * @return Operator\Certificate
-     */
-    public function certificate()
+    public function certificate(): Operator\Certificate
     {
-        return $this->_getOperator('Certificate');
+        return $this->getOperator('Certificate');
     }
 
-    /**
-     * @return Operator\SiteAlias
-     */
-    public function siteAlias()
+    public function siteAlias(): Operator\SiteAlias
     {
-        return $this->_getOperator('SiteAlias');
+        return $this->getOperator('SiteAlias');
     }
 
-    /**
-     * @return Operator\Ip
-     */
-    public function ip()
+    public function ip(): Operator\Ip
     {
-        return $this->_getOperator('Ip');
+        return $this->getOperator('Ip');
     }
 
-    /**
-     * @return Operator\EventLog
-     */
-    public function eventLog()
+    public function eventLog(): Operator\EventLog
     {
-        return $this->_getOperator('EventLog');
+        return $this->getOperator('EventLog');
     }
 
-    /**
-     * @return Operator\SecretKey
-     */
-    public function secretKey()
+    public function secretKey(): Operator\SecretKey
     {
-        return $this->_getOperator('SecretKey');
+        return $this->getOperator('SecretKey');
     }
 
-    /**
-     * @return Operator\Ui
-     */
-    public function ui()
+    public function ui(): Operator\Ui
     {
-        return $this->_getOperator('Ui');
+        return $this->getOperator('Ui');
     }
 
-    /**
-     * @return Operator\ServicePlan
-     */
-    public function servicePlan()
+    public function servicePlan(): Operator\ServicePlan
     {
-        return $this->_getOperator('ServicePlan');
+        return $this->getOperator('ServicePlan');
     }
 
-    /**
-     * @return Operator\VirtualDirectory
-     */
-    public function virtualDirectory()
+    public function virtualDirectory(): Operator\VirtualDirectory
     {
-        return $this->_getOperator('VirtualDirectory');
+        return $this->getOperator('VirtualDirectory');
     }
 
-    /**
-     * @return Operator\Database
-     */
-    public function database()
+    public function database(): Operator\Database
     {
-        return $this->_getOperator('Database');
+        return $this->getOperator('Database');
     }
 
-    /**
-     * @return Operator\Session
-     */
-    public function session()
+    public function session(): Operator\Session
     {
-        return $this->_getOperator('Session');
+        return $this->getOperator('Session');
     }
 
-    /**
-     * @return Operator\Locale
-     */
-    public function locale()
+    public function locale(): Operator\Locale
     {
-        return $this->_getOperator('Locale');
+        return $this->getOperator('Locale');
     }
 
-    /**
-     * @return Operator\LogRotation
-     */
-    public function logRotation()
+    public function logRotation(): Operator\LogRotation
     {
-        return $this->_getOperator('LogRotation');
+        return $this->getOperator('LogRotation');
     }
 
-    /**
-     * @return Operator\ProtectedDirectory
-     */
-    public function protectedDirectory()
+    public function protectedDirectory(): Operator\ProtectedDirectory
     {
-        return $this->_getOperator('ProtectedDirectory');
+        return $this->getOperator('ProtectedDirectory');
     }
 
-    /**
-     * @return Operator\Reseller
-     */
-    public function reseller()
+    public function reseller(): Operator\Reseller
     {
-        return $this->_getOperator('Reseller');
+        return $this->getOperator('Reseller');
     }
 
-    /**
-     * @return Operator\ResellerPlan
-     */
-    public function resellerPlan()
+    public function resellerPlan(): Operator\ResellerPlan
     {
-        return $this->_getOperator('ResellerPlan');
+        return $this->getOperator('ResellerPlan');
     }
 
-    /**
-     * @return Operator\Aps
-     */
-    public function aps()
+    public function aps(): Operator\Aps
     {
-        return $this->_getOperator('Aps');
+        return $this->getOperator('Aps');
     }
 
-    /**
-     * @return Operator\ServicePlanAddon
-     */
-    public function servicePlanAddon()
+    public function servicePlanAddon(): Operator\ServicePlanAddon
     {
-        return $this->_getOperator('ServicePlanAddon');
+        return $this->getOperator('ServicePlanAddon');
     }
 
-    /**
-     * @return Operator\Site
-     */
-    public function site()
+    public function site(): Operator\Site
     {
-        return $this->_getOperator('Site');
+        return $this->getOperator('Site');
     }
 
-    /**
-     * @return Operator\PhpHandler
-     */
-    public function phpHandler()
+    public function phpHandler(): Operator\PhpHandler
     {
-        return $this->_getOperator('PhpHandler');
+        return $this->getOperator('PhpHandler');
     }
 }

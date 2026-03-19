@@ -11,39 +11,35 @@ declare(strict_types=1);
 
 namespace StefanFroemken\PleskWidget\Widget;
 
-use Psr\Http\Message\ServerRequestInterface;
 use StefanFroemken\PleskWidget\Client\ExtensionSettingException;
 use StefanFroemken\PleskWidget\Client\PleskClientFactory;
-use StefanFroemken\PleskWidget\Configuration\ExtConf;
 use StefanFroemken\PleskWidget\Service\PleskSiteService;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
-use TYPO3\CMS\Dashboard\Widgets\RequestAwareWidgetInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetConfigurationInterface;
-use TYPO3\CMS\Dashboard\Widgets\WidgetInterface;
+use TYPO3\CMS\Dashboard\Widgets\WidgetContext;
+use TYPO3\CMS\Dashboard\Widgets\WidgetRendererInterface;
+use TYPO3\CMS\Dashboard\Widgets\WidgetResult;
 
-class PhpWidget implements WidgetInterface, RequestAwareWidgetInterface
+class PhpWidget implements WidgetRendererInterface
 {
-    private ServerRequestInterface $request;
-
     public function __construct(
         private readonly WidgetConfigurationInterface $configuration,
         private readonly BackendViewFactory $backendViewFactory,
         private readonly PleskClientFactory $pleskClientFactory,
         private readonly PleskSiteService $pleskSiteService,
-        private readonly ExtConf $extConf,
-        private readonly array $options = []
     ) {}
 
-    public function setRequest(ServerRequestInterface $request): void
+    public function getSettingsDefinitions(): array
     {
-        $this->request = $request;
+        return [];
     }
 
-    public function renderWidgetContent(): string
+    public function renderWidget(WidgetContext $context): WidgetResult
     {
-        $view = $this->backendViewFactory->create($this->request);
+        $view = $this->backendViewFactory->create($context->request);
+
         $variables = [
-            'configuration' => $this->configuration,
+            'configuration' => $context->configuration,
         ];
 
         try {
@@ -64,11 +60,10 @@ class PhpWidget implements WidgetInterface, RequestAwareWidgetInterface
 
         $view->assignMultiple($variables);
 
-        return $view->render('Widget/Php');
-    }
-
-    public function getOptions(): array
-    {
-        return $this->options;
+        return new WidgetResult(
+            content: $view->render('Widget/Php'),
+            label: $context->configuration->getTitle(),
+            refreshable: true,
+        );
     }
 }

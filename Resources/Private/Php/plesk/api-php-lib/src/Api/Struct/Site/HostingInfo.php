@@ -1,29 +1,25 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Site;
 
-class HostingInfo extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class HostingInfo extends AbstractStruct
 {
-    /** @var array */
-    public $properties = [];
+    public array $properties = [];
+    public string $ipAddress;
 
-    /** @var string */
-    public $ipAddress;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        foreach ($apiResponse->vrt_hst->property as $property) {
-            $this->properties[(string)$property->name] = (string)$property->value;
+        foreach ($apiResponse->vrt_hst->property ?? [] as $property) {
+            $this->properties[(string) $property->name] = (string) $property->value;
         }
-        $this->_initScalarProperties($apiResponse->vrt_hst, [
-            'ip_address',
-        ]);
+
+        if (!is_null($apiResponse->vrt_hst)) {
+            $this->initScalarProperties($apiResponse->vrt_hst, [
+                'ip_address',
+            ]);
+        }
     }
 }

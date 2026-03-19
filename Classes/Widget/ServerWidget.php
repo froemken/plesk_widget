@@ -23,9 +23,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Dashboard\Widgets\Provider\ButtonProvider;
 use TYPO3\CMS\Dashboard\Widgets\RequestAwareWidgetInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetConfigurationInterface;
-use TYPO3\CMS\Dashboard\Widgets\WidgetInterface;
+use TYPO3\CMS\Dashboard\Widgets\WidgetContext;
+use TYPO3\CMS\Dashboard\Widgets\WidgetRendererInterface;
+use TYPO3\CMS\Dashboard\Widgets\WidgetResult;
 
-class ServerWidget implements WidgetInterface, RequestAwareWidgetInterface
+class ServerWidget implements WidgetRendererInterface
 {
     private ServerRequestInterface $request;
 
@@ -35,20 +37,19 @@ class ServerWidget implements WidgetInterface, RequestAwareWidgetInterface
         private readonly ServerDataProvider $dataProvider,
         private readonly PleskClientFactory $pleskClientFactory,
         private readonly PleskSiteService $pleskSiteService,
-        private readonly ExtConf $extConf,
-        private readonly array $options = []
     ) {}
 
-    public function setRequest(ServerRequestInterface $request): void
+    public function getSettingsDefinitions(): array
     {
-        $this->request = $request;
+        return [];
     }
 
-    public function renderWidgetContent(): string
+    public function renderWidget(WidgetContext $context): WidgetResult
     {
-        $view = $this->backendViewFactory->create($this->request);
+        $view = $this->backendViewFactory->create($context->request);
+
         $variables = [
-            'configuration' => $this->configuration,
+            'configuration' => $context->configuration,
         ];
 
         try {
@@ -72,7 +73,11 @@ class ServerWidget implements WidgetInterface, RequestAwareWidgetInterface
 
         $view->assignMultiple($variables);
 
-        return $view->render('Widget/Server');
+        return new WidgetResult(
+            content: $view->render('Widget/Server'),
+            label: $context->configuration->getTitle(),
+            refreshable: true,
+        );
     }
 
     protected function getButtonProvider(Client $pleskClient, string $externalIpAddress): ButtonProvider
@@ -89,10 +94,5 @@ class ServerWidget implements WidgetInterface, RequestAwareWidgetInterface
     {
         // Get external IP address. Works also within DDEV/Docker containers
         return file_get_contents('http://ipecho.net/plain');
-    }
-
-    public function getOptions(): array
-    {
-        return $this->options;
     }
 }

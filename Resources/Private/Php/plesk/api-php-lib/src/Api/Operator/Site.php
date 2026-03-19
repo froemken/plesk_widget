@@ -1,11 +1,5 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Operator;
 
@@ -15,20 +9,17 @@ class Site extends \PleskX\Api\Operator
 {
     public const PROPERTIES_HOSTING = 'hosting';
 
-    /**
-     * @return Struct\Info
-     */
-    public function create(array $properties)
+    public function create(array $properties): Struct\Info
     {
-        $packet = $this->_client->getPacket();
-        $info = $packet->addChild($this->_wrapperTag)->addChild('add');
+        $packet = $this->client->getPacket();
+        $info = $packet->addChild($this->wrapperTag)->addChild('add');
 
         $infoGeneral = $info->addChild('gen_setup');
         foreach ($properties as $name => $value) {
             if (!is_scalar($value)) {
                 continue;
             }
-            $infoGeneral->{$name} = $value;
+            $infoGeneral->{$name} = (string) $value;
         }
 
         // set hosting properties
@@ -36,12 +27,14 @@ class Site extends \PleskX\Api\Operator
             $hostingNode = $info->addChild('hosting')->addChild('vrt_hst');
             foreach ($properties[static::PROPERTIES_HOSTING] as $name => $value) {
                 $propertyNode = $hostingNode->addChild('property');
+                /** @psalm-suppress UndefinedPropertyAssignment */
                 $propertyNode->name = $name;
+                /** @psalm-suppress UndefinedPropertyAssignment */
                 $propertyNode->value = $value;
             }
         }
 
-        $response = $this->_client->request($packet);
+        $response = $this->client->request($packet);
 
         return new Struct\Info($response);
     }
@@ -52,22 +45,22 @@ class Site extends \PleskX\Api\Operator
      *
      * @return bool
      */
-    public function delete($field, $value)
+    public function delete(string $field, $value): bool
     {
-        return $this->_delete($field, $value);
+        return $this->deleteBy($field, $value);
     }
 
     /**
      * @param string $field
      * @param int|string $value
      *
-     * @return Struct\GeneralInfo
+     * @return ?Struct\GeneralInfo
      */
-    public function get($field, $value)
+    public function get(string $field, $value): ?Struct\GeneralInfo
     {
-        $items = $this->_getItems(Struct\GeneralInfo::class, 'gen_info', $field, $value);
+        $items = $this->getItems(Struct\GeneralInfo::class, 'gen_info', $field, $value);
 
-        return reset($items);
+        return reset($items) ?: null;
     }
 
     /**
@@ -76,11 +69,17 @@ class Site extends \PleskX\Api\Operator
      *
      * @return Struct\HostingInfo|null
      */
-    public function getHosting($field, $value)
+    public function getHosting(string $field, $value): ?Struct\HostingInfo
     {
-        $items = $this->_getItems(Struct\HostingInfo::class, 'hosting', $field, $value, function ($node) {
-            return isset($node->vrt_hst);
-        });
+        $items = $this->getItems(
+            Struct\HostingInfo::class,
+            'hosting',
+            $field,
+            $value,
+            function (\SimpleXMLElement $node) {
+                return isset($node->vrt_hst);
+            }
+        );
 
         return empty($items) ? null : reset($items);
     }
@@ -88,8 +87,8 @@ class Site extends \PleskX\Api\Operator
     /**
      * @return Struct\GeneralInfo[]
      */
-    public function getAll()
+    public function getAll(): array
     {
-        return $this->_getItems(Struct\GeneralInfo::class, 'gen_info');
+        return $this->getItems(Struct\GeneralInfo::class, 'gen_info');
     }
 }

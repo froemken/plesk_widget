@@ -1,28 +1,19 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Server;
 
-class Admin extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class Admin extends AbstractStruct
 {
-    /** @var string */
-    public $companyName;
+    public string $companyName;
+    public string $name;
+    public string $email;
 
-    /** @var string */
-    public $name;
-
-    /** @var string */
-    public $email;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             ['admin_cname' => 'companyName'],
             ['admin_pname' => 'name'],
             ['admin_email' => 'email'],

@@ -1,27 +1,38 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Certificate;
 
-class Info extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class Info extends AbstractStruct
 {
-    /** @var string */
-    public $request;
+    public ?string $request = null;
+    public ?string $privateKey = null;
+    public ?string $publicKey = null;
+    public ?string $publicKeyCA = null;
 
-    /** @var string */
-    public $privateKey;
-
-    public function __construct($apiResponse)
+    public function __construct($input)
     {
-        $this->_initScalarProperties($apiResponse, [
-            ['csr' => 'request'],
-            ['pvt' => 'privateKey'],
+        if ($input instanceof \SimpleXMLElement) {
+            $this->initScalarProperties($input, [
+                ['csr' => 'request'],
+                ['pvt' => 'privateKey'],
+            ]);
+        } else {
+            foreach ($input as $name => $value) {
+                $this->$name = $value;
+            }
+        }
+    }
+
+    public function getMapping(): array
+    {
+        return array_filter([
+            'csr' => $this->request,
+            'pvt' => $this->privateKey,
+            'cert' => $this->publicKey,
+            'ca' => $this->publicKeyCA,
         ]);
     }
 }

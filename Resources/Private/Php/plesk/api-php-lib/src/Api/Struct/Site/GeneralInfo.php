@@ -1,39 +1,40 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Site;
 
-class GeneralInfo extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class GeneralInfo extends AbstractStruct
 {
-    /** @var string */
-    public $name;
+    public int $id;
+    public string $creationDate;
+    public string $name;
+    public string $asciiName;
+    public string $guid;
+    public string $status;
+    public int $realSize;
+    public array $ipAddresses = [];
+    public string $description;
+    public string $webspaceGuid;
+    public int $webspaceId;
 
-    /** @var string */
-    public $asciiName;
-
-    /** @var string */
-    public $guid;
-
-    /** @var string */
-    public $status;
-
-    /** @var string */
-    public $description;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
+            ['cr_date' => 'creationDate'],
             'name',
             'ascii-name',
             'status',
+            'real_size',
             'guid',
             'description',
+            'webspace-guid',
+            'webspace-id',
         ]);
+
+        foreach ($apiResponse->dns_ip_address ?? [] as $ip) {
+            $this->ipAddresses[] = (string) $ip;
+        }
     }
 }

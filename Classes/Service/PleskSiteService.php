@@ -15,9 +15,11 @@ use PleskX\Api\Client;
 use StefanFroemken\PleskWidget\Plesk\Site;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 
-class PleskSiteService
+readonly class PleskSiteService
 {
-    public function __construct(private readonly FrontendInterface $cache) {}
+    public function __construct(
+        private FrontendInterface $cache,
+    ) {}
 
     /**
      * @return Site[]

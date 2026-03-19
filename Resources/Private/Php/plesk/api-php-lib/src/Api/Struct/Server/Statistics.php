@@ -1,15 +1,11 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Server;
 
-class Statistics extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class Statistics extends AbstractStruct
 {
     /** @var Statistics\Objects */
     public $objects;
@@ -32,7 +28,11 @@ class Statistics extends \PleskX\Api\Struct
     /** @var Statistics\DiskSpace[] */
     public $diskSpace;
 
-    public function __construct($apiResponse)
+    /**
+     * @param \SimpleXMLElement $apiResponse
+     * @psalm-suppress PossiblyNullArgument
+     */
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
         $this->objects = new Statistics\Objects($apiResponse->objects);
         $this->version = new Statistics\Version($apiResponse->version);
@@ -42,8 +42,8 @@ class Statistics extends \PleskX\Api\Struct
         $this->swap = new Statistics\Swap($apiResponse->swap);
 
         $this->diskSpace = [];
-        foreach ($apiResponse->diskspace as $disk) {
-            $this->diskSpace[(string)$disk->device->name] = new Statistics\DiskSpace($disk->device);
+        foreach ($apiResponse->diskspace ?? [] as $disk) {
+            $this->diskSpace[(string) $disk->device->name] = new Statistics\DiskSpace($disk->device);
         }
     }
 }

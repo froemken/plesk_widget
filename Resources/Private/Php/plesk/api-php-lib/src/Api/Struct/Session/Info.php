@@ -1,37 +1,22 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Session;
 
-class Info extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class Info extends AbstractStruct
 {
-    /** @var string */
-    public $id;
+    public string $id;
+    public string $type;
+    public string $ipAddress;
+    public string $login;
+    public string $loginTime;
+    public string $idle;
 
-    /** @var string */
-    public $type;
-
-    /** @var string */
-    public $ipAddress;
-
-    /** @var string */
-    public $login;
-
-    /** @var string */
-    public $loginTime;
-
-    /** @var string */
-    public $idle;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             'id',
             'type',
             'ip-address',

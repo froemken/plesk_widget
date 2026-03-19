@@ -1,44 +1,34 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Operator;
 
+use PleskX\Api\Client;
+use PleskX\Api\Operator;
 use PleskX\Api\Struct\Mail as Struct;
 
-class Mail extends \PleskX\Api\Operator
+class Mail extends Operator
 {
-    /**
-     * @param string $name
-     * @param int $siteId
-     * @param bool $mailbox
-     * @param string $password
-     *
-     * @return Struct\Info
-     */
-    public function create($name, $siteId, $mailbox = false, $password = '')
+    public function create(string $name, int $siteId, bool $mailbox = false, string $password = ''): Struct\Info
     {
-        $packet = $this->_client->getPacket();
-        $info = $packet->addChild($this->_wrapperTag)->addChild('create');
+        $packet = $this->client->getPacket();
+        $info = $packet->addChild($this->wrapperTag)->addChild('create');
 
         $filter = $info->addChild('filter');
-        $filter->addChild('site-id', $siteId);
+        $filter->addChild('site-id', (string) $siteId);
         $mailname = $filter->addChild('mailname');
         $mailname->addChild('name', $name);
         if ($mailbox) {
             $mailname->addChild('mailbox')->addChild('enabled', 'true');
         }
         if (!empty($password)) {
+            /** @psalm-suppress UndefinedPropertyAssignment */
             $mailname->addChild('password')->value = $password;
         }
 
-        $response = $this->_client->request($packet);
+        $response = $this->client->request($packet);
 
+        /** @psalm-suppress PossiblyNullArgument */
         return new Struct\Info($response->mailname);
     }
 
@@ -49,24 +39,20 @@ class Mail extends \PleskX\Api\Operator
      *
      * @return bool
      */
-    public function delete($field, $value, $siteId)
+    public function delete(string $field, $value, int $siteId): bool
     {
-        $packet = $this->_client->getPacket();
-        $filter = $packet->addChild($this->_wrapperTag)->addChild('remove')->addChild('filter');
-        $filter->addChild('site-id', $siteId);
-        $filter->{$field} = $value;
-        $response = $this->_client->request($packet);
+        $packet = $this->client->getPacket();
+        $filter = $packet->addChild($this->wrapperTag)->addChild('remove')->addChild('filter');
 
-        return (string)$response->status === 'ok';
+        $filter->addChild('site-id', (string) $siteId);
+        $filter->{$field} = (string) $value;
+
+        $response = $this->client->request($packet);
+
+        return 'ok' === (string) $response->status;
     }
 
-    /**
-     * @param string $name
-     * @param int $siteId
-     *
-     * @return Struct\GeneralInfo
-     */
-    public function get($name, $siteId)
+    public function get(string $name, int $siteId): Struct\GeneralInfo
     {
         $items = $this->getAll($siteId, $name);
 
@@ -79,21 +65,21 @@ class Mail extends \PleskX\Api\Operator
      *
      * @return Struct\GeneralInfo[]
      */
-    public function getAll($siteId, $name = null)
+    public function getAll(int $siteId, $name = null): array
     {
-        $packet = $this->_client->getPacket();
-        $getTag = $packet->addChild($this->_wrapperTag)->addChild('get_info');
+        $packet = $this->client->getPacket();
+        $getTag = $packet->addChild($this->wrapperTag)->addChild('get_info');
 
         $filterTag = $getTag->addChild('filter');
-        $filterTag->addChild('site-id', $siteId);
+        $filterTag->addChild('site-id', (string) $siteId);
         if (!is_null($name)) {
             $filterTag->addChild('name', $name);
         }
 
-        $response = $this->_client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
+        $response = $this->client->request($packet, Client::RESPONSE_FULL);
         $items = [];
-        foreach ($response->xpath('//result') as $xmlResult) {
-            if (!isset($xmlResult->mailname)) {
+        foreach ((array) $response->xpath('//result') as $xmlResult) {
+            if (!$xmlResult || !isset($xmlResult->mailname)) {
                 continue;
             }
             $item = new Struct\GeneralInfo($xmlResult->mailname);

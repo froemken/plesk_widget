@@ -1,33 +1,28 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Operator;
 
+use PleskX\Api\Operator;
 use PleskX\Api\Struct\Webspace as Struct;
 
-class Webspace extends \PleskX\Api\Operator
+class Webspace extends Operator
 {
-    public function getPermissionDescriptor()
+    public function getPermissionDescriptor(): Struct\PermissionDescriptor
     {
         $response = $this->request('get-permission-descriptor.filter');
 
         return new Struct\PermissionDescriptor($response);
     }
 
-    public function getLimitDescriptor()
+    public function getLimitDescriptor(): Struct\LimitDescriptor
     {
         $response = $this->request('get-limit-descriptor.filter');
 
         return new Struct\LimitDescriptor($response);
     }
 
-    public function getPhysicalHostingDescriptor()
+    public function getPhysicalHostingDescriptor(): Struct\PhysicalHostingDescriptor
     {
         $response = $this->request('get-physical-hosting-descriptor.filter');
 
@@ -40,15 +35,15 @@ class Webspace extends \PleskX\Api\Operator
      *
      * @return Struct\PhpSettings
      */
-    public function getPhpSettings($field, $value)
+    public function getPhpSettings(string $field, $value): Struct\PhpSettings
     {
-        $packet = $this->_client->getPacket();
-        $getTag = $packet->addChild($this->_wrapperTag)->addChild('get');
+        $packet = $this->client->getPacket();
+        $getTag = $packet->addChild($this->wrapperTag)->addChild('get');
 
-        $getTag->addChild('filter')->addChild($field, $value);
+        $getTag->addChild('filter')->addChild($field, (string) $value);
         $getTag->addChild('dataset')->addChild('php-settings');
 
-        $response = $this->_client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
+        $response = $this->client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
 
         return new Struct\PhpSettings($response);
     }
@@ -59,44 +54,56 @@ class Webspace extends \PleskX\Api\Operator
      *
      * @return Struct\Limits
      */
-    public function getLimits($field, $value)
+    public function getLimits(string $field, $value): Struct\Limits
     {
-        $items = $this->_getItems(Struct\Limits::class, 'limits', $field, $value);
+        $items = $this->getItems(Struct\Limits::class, 'limits', $field, $value);
 
         return reset($items);
     }
 
     /**
+     * @param array $properties
+     * @param array|null $hostingProperties
+     * @param string $planName
+     *
      * @return Struct\Info
      */
-    public function create(array $properties, array $hostingProperties = null, $planName = null)
+    public function create(array $properties, ?array $hostingProperties = null, string $planName = ''): Struct\Info
     {
-        $packet = $this->_client->getPacket();
-        $info = $packet->addChild($this->_wrapperTag)->addChild('add');
+        $packet = $this->client->getPacket();
+        $info = $packet->addChild($this->wrapperTag)->addChild('add');
 
         $infoGeneral = $info->addChild('gen_setup');
         foreach ($properties as $name => $value) {
-            $infoGeneral->addChild($name, $value);
+            if (is_array($value)) {
+                continue;
+            } else {
+                $infoGeneral->addChild($name, (string) $value);
+            }
         }
 
         if ($hostingProperties) {
             $infoHosting = $info->addChild('hosting')->addChild('vrt_hst');
             foreach ($hostingProperties as $name => $value) {
                 $property = $infoHosting->addChild('property');
+                /** @psalm-suppress UndefinedPropertyAssignment */
                 $property->name = $name;
+                /** @psalm-suppress UndefinedPropertyAssignment */
                 $property->value = $value;
             }
 
             if (isset($properties['ip_address'])) {
-                $infoHosting->addChild('ip_address', $properties['ip_address']);
+                foreach ((array) $properties['ip_address'] as $ipAddress) {
+                    $infoHosting->addChild('ip_address', $ipAddress);
+                }
             }
         }
 
-        if ($planName) {
+        if ('' !== $planName) {
             $info->addChild('plan-name', $planName);
         }
 
-        $response = $this->_client->request($packet);
+        $response = $this->client->request($packet);
 
         return new Struct\Info($response, $properties['name'] ?? '');
     }
@@ -107,9 +114,9 @@ class Webspace extends \PleskX\Api\Operator
      *
      * @return bool
      */
-    public function delete($field, $value)
+    public function delete(string $field, $value): bool
     {
-        return $this->_delete($field, $value);
+        return $this->deleteBy($field, $value);
     }
 
     /**
@@ -118,9 +125,9 @@ class Webspace extends \PleskX\Api\Operator
      *
      * @return Struct\GeneralInfo
      */
-    public function get($field, $value)
+    public function get(string $field, $value): Struct\GeneralInfo
     {
-        $items = $this->_getItems(Struct\GeneralInfo::class, 'gen_info', $field, $value);
+        $items = $this->getItems(Struct\GeneralInfo::class, 'gen_info', $field, $value);
 
         return reset($items);
     }
@@ -128,9 +135,9 @@ class Webspace extends \PleskX\Api\Operator
     /**
      * @return Struct\GeneralInfo[]
      */
-    public function getAll()
+    public function getAll(): array
     {
-        return $this->_getItems(Struct\GeneralInfo::class, 'gen_info');
+        return $this->getItems(Struct\GeneralInfo::class, 'gen_info');
     }
 
     /**
@@ -139,10 +146,54 @@ class Webspace extends \PleskX\Api\Operator
      *
      * @return Struct\DiskUsage
      */
-    public function getDiskUsage($field, $value)
+    public function getDiskUsage(string $field, $value): Struct\DiskUsage
     {
-        $items = $this->_getItems(Struct\DiskUsage::class, 'disk_usage', $field, $value);
+        $items = $this->getItems(Struct\DiskUsage::class, 'disk_usage', $field, $value);
 
         return reset($items);
+    }
+
+    /**
+     * @param string $field
+     * @param int|string $value
+     *
+     * @return bool
+     */
+    public function enable(string $field, $value): bool
+    {
+        return $this->setProperties($field, $value, ['status' => 0]);
+    }
+
+    /**
+     * @param string $field
+     * @param int|string $value
+     *
+     * @return bool
+     */
+    public function disable(string $field, $value): bool
+    {
+        return $this->setProperties($field, $value, ['status' => 16]);
+    }
+
+    /**
+     * @param string $field
+     * @param int|string $value
+     * @param array $properties
+     *
+     * @return bool
+     */
+    public function setProperties(string $field, $value, array $properties): bool
+    {
+        $packet = $this->client->getPacket();
+        $setTag = $packet->addChild($this->wrapperTag)->addChild('set');
+        $setTag->addChild('filter')->addChild($field, (string) $value);
+        $genInfoTag = $setTag->addChild('values')->addChild('gen_setup');
+        foreach ($properties as $property => $propertyValue) {
+            $genInfoTag->addChild($property, (string) $propertyValue);
+        }
+
+        $response = $this->client->request($packet);
+
+        return 'ok' === (string) $response->status;
     }
 }

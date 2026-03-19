@@ -1,11 +1,5 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api;
 
@@ -21,9 +15,11 @@ class InternalClient extends Client
 
     /**
      * Setup login to execute requests under certain user.
+     *
+     * @param string $login
      */
-    public function setLogin($login)
+    public function setLogin(string $login): void
     {
-        $this->_login = $login;
+        $this->login = $login;
     }
 }

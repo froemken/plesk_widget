@@ -1,22 +1,17 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\ProtectedDirectory;
 
-class UserInfo extends \PleskX\Api\Struct
-{
-    /** @var int */
-    public $id;
+use PleskX\Api\AbstractStruct;
 
-    public function __construct($apiResponse)
+class UserInfo extends AbstractStruct
+{
+    public int $id;
+
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             'id',
         ]);
     }

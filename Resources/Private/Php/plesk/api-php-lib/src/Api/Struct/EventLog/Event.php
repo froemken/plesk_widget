@@ -1,31 +1,20 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\EventLog;
 
-class Event extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class Event extends AbstractStruct
 {
-    /** @var string */
-    public $type;
+    public string $type;
+    public int $time;
+    public string $class;
+    public string $id;
 
-    /** @var int */
-    public $time;
-
-    /** @var string */
-    public $class;
-
-    /** @var string */
-    public $id;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             'type',
             'time',
             'class',

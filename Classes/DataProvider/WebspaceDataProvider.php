@@ -14,22 +14,25 @@ namespace StefanFroemken\PleskWidget\DataProvider;
 use PleskX\Api\Client;
 use StefanFroemken\PleskWidget\Client\ExtensionSettingException;
 use StefanFroemken\PleskWidget\Client\PleskClientFactory;
-use StefanFroemken\PleskWidget\Configuration\ExtConf;
 use StefanFroemken\PleskWidget\Plesk\Webspace\Limits;
+use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Dashboard\WidgetApi;
-use TYPO3\CMS\Dashboard\Widgets\ChartDataProviderInterface;
+use TYPO3\CMS\Dashboard\Widgets\WidgetContext;
 
-class WebspaceDataProvider implements ChartDataProviderInterface
+readonly class WebspaceDataProvider
 {
     public function __construct(
-        private readonly ExtConf $extConf,
-        private readonly PleskClientFactory $pleskClientFactory
+        private PleskClientFactory $pleskClientFactory,
     ) {}
 
-    public function getChartData(): array
+    public function getChartData(?Record $pleskServerRecord, WidgetContext $widgetContext): array
     {
+        if (!$pleskServerRecord instanceof Record) {
+            return [];
+        }
+
         try {
-            $pleskClient = $this->pleskClientFactory->create();
+            $pleskClient = $this->pleskClientFactory->create($pleskServerRecord);
         } catch (ExtensionSettingException $e) {
             return [];
         }
@@ -45,13 +48,13 @@ class WebspaceDataProvider implements ChartDataProviderInterface
                 [
                     'backgroundColor' => WidgetApi::getDefaultChartColors(),
                     'border' => 0,
-                    'data' => $this->getWebSpaceStatus($pleskClient),
+                    'data' => $this->getWebSpaceStatus($pleskClient, $widgetContext),
                 ],
             ],
         ];
     }
 
-    private function getWebSpaceStatus(Client $pleskClient): array
+    private function getWebSpaceStatus(Client $pleskClient, WidgetContext $widgetContext): array
     {
         $diskUsage = $this->getDiskUsage($pleskClient);
         $diskSpace = (int)$this->getLimit('disk_space', $pleskClient)->value;
@@ -59,26 +62,30 @@ class WebspaceDataProvider implements ChartDataProviderInterface
         return [
             0 => $this->calcDiskUsage(
                 ($diskUsage->httpdocs + $diskUsage->httpsdocs),
-                $diskSpace
+                $diskSpace,
+                $widgetContext,
             ),
             1 => $this->calcDiskUsage(
                 $diskUsage->dbases,
-                $diskSpace
+                $diskSpace,
+                $widgetContext,
             ),
             2 => $this->calcDiskUsage(
                 $diskUsage->logs,
-                $diskSpace
+                $diskSpace,
+                $widgetContext,
             ),
             3 => $this->calcDiskUsage(
                 ($diskSpace - $diskUsage->httpdocs + $diskUsage->httpsdocs + $diskUsage->dbases + $diskUsage->logs),
-                $diskSpace
+                $diskSpace,
+                $widgetContext,
             ),
         ];
     }
 
-    private function calcDiskUsage(int $part, int $total = 0): float
+    private function calcDiskUsage(int $part, int $total, WidgetContext $widgetContext): float
     {
-        $diskUsageType = $this->extConf->getDiskUsageType()->value;
+        $diskUsageType = $widgetContext->settings->get('unit');
 
         if ($diskUsageType === '%' && $total !== 0) {
             $value = round(100 / $total * $part, 4);

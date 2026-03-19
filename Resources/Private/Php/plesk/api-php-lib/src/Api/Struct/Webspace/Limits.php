@@ -1,29 +1,22 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Webspace;
 
-class Limits extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class Limits extends AbstractStruct
 {
-    /** @var string */
-    public $overuse;
+    public string $overuse;
+    public array $limits;
 
-    /** @var array */
-    public $limits;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, ['overuse']);
+        $this->initScalarProperties($apiResponse, ['overuse']);
         $this->limits = [];
 
-        foreach ($apiResponse->limit as $limit) {
-            $this->limits[(string)$limit->name] = new Limit($limit);
+        foreach ($apiResponse->limit ?? [] as $limit) {
+            $this->limits[(string) $limit->name] = new Limit($limit);
         }
     }
 }

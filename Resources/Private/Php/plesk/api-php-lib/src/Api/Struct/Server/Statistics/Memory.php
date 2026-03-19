@@ -1,37 +1,22 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Server\Statistics;
 
-class Memory extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class Memory extends AbstractStruct
 {
-    /** @var int */
-    public $total;
+    public int $total;
+    public int $used;
+    public int $free;
+    public int $shared;
+    public int $buffer;
+    public int $cached;
 
-    /** @var int */
-    public $used;
-
-    /** @var int */
-    public $free;
-
-    /** @var int */
-    public $shared;
-
-    /** @var int */
-    public $buffer;
-
-    /** @var int */
-    public $cached;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             'total',
             'used',
             'free',

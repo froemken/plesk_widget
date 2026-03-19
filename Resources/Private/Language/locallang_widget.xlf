@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
+  <file id="plesk-widget-widget">
+    <unit id="pleskServer">
+      <segment state="final">
+        <source>Plesk Server</source>
+      </segment>
+    </unit>
+    <unit id="pleskServer.description">
+      <segment state="final">
+        <source>Select a Plesk Server record previously created on the root page.</source>
+      </segment>
+    </unit>
+    <unit id="unit">
+      <segment state="final">
+        <source>Display Unit</source>
+      </segment>
+    </unit>
+    <unit id="unit.description">
+      <segment state="final">
+        <source>Select the unit to display data in percentage, megabytes, or gigabytes.</source>
+      </segment>
+    </unit>
+  </file>
+</xliff>

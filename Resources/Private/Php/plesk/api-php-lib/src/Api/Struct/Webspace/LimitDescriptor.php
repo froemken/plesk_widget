@@ -1,25 +1,20 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Webspace;
 
-class LimitDescriptor extends \PleskX\Api\Struct
-{
-    /** @var array */
-    public $limits;
+use PleskX\Api\AbstractStruct;
 
-    public function __construct($apiResponse)
+class LimitDescriptor extends AbstractStruct
+{
+    public array $limits;
+
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
         $this->limits = [];
 
-        foreach ($apiResponse->descriptor->property as $propertyInfo) {
-            $this->limits[(string)$propertyInfo->name] = new LimitInfo($propertyInfo);
+        foreach ($apiResponse->descriptor->property ?? [] as $propertyInfo) {
+            $this->limits[(string) $propertyInfo->name] = new LimitInfo($propertyInfo);
         }
     }
 }

@@ -1,31 +1,20 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\SecretKey;
 
-class Info extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class Info extends AbstractStruct
 {
-    /** @var string */
-    public $key;
+    public string $key;
+    public string $ipAddress;
+    public string $description;
+    public string $login;
 
-    /** @var string */
-    public $ipAddress;
-
-    /** @var string */
-    public $description;
-
-    /** @var string */
-    public $login;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             'key',
             'ip_address',
             'description',

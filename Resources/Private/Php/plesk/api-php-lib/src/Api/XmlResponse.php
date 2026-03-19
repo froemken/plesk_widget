@@ -1,11 +1,5 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api;
 
@@ -21,8 +15,13 @@ class XmlResponse extends \SimpleXMLElement
      *
      * @return string
      */
-    public function getValue($node)
+    public function getValue(string $node): string
     {
-        return (string)$this->xpath('//' . $node)[0];
+        $result = $this->xpath('//' . $node);
+        if (is_array($result) && isset($result[0])) {
+            return (string) $result[0];
+        }
+
+        return '';
     }
 }

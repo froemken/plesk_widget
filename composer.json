@@ -20,7 +20,7 @@
 	"require": {
 		"typo3/cms-core": "^14.1",
 		"typo3/cms-dashboard": "^14.1",
-		"plesk/api-php-lib": "1.1.2"
+		"plesk/api-php-lib": "2.2.1"
 	},
 	"require-dev": {
 		"ergebnis/composer-normalize": "^2.44",

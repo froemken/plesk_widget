@@ -1,61 +1,32 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Customer;
 
-class GeneralInfo extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class GeneralInfo extends AbstractStruct
 {
-    /** @var string */
-    public $company;
+    public int $id;
+    public string $company;
+    public string $personalName;
+    public string $login;
+    public string $guid;
+    public string $email;
+    public string $phone;
+    public string $fax;
+    public string $address;
+    public string $postalCode;
+    public string $city;
+    public string $state;
+    public string $country;
+    public string $description;
+    public string $externalId;
+    public bool $enabled;
 
-    /** @var string */
-    public $personalName;
-
-    /** @var string */
-    public $login;
-
-    /** @var string */
-    public $guid;
-
-    /** @var string */
-    public $email;
-
-    /** @var string */
-    public $phone;
-
-    /** @var string */
-    public $fax;
-
-    /** @var string */
-    public $address;
-
-    /** @var string */
-    public $postalCode;
-
-    /** @var string */
-    public $city;
-
-    /** @var string */
-    public $state;
-
-    /** @var string */
-    public $country;
-
-    /** @var string */
-    public $description;
-
-    /** @var string */
-    public $externalId;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             ['cname' => 'company'],
             ['pname' => 'personalName'],
             'login',
@@ -71,5 +42,7 @@ class GeneralInfo extends \PleskX\Api\Struct
             'external-id',
             'description',
         ]);
+
+        $this->enabled = '0' === (string) $apiResponse->status;
     }
 }

@@ -1,22 +1,17 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Server;
 
-class SessionPreferences extends \PleskX\Api\Struct
-{
-    /** @var int */
-    public $loginTimeout;
+use PleskX\Api\AbstractStruct;
 
-    public function __construct($apiResponse)
+class SessionPreferences extends AbstractStruct
+{
+    public int $loginTimeout;
+
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             'login_timeout',
         ]);
     }

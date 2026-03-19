@@ -1,38 +1,27 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Struct\Subdomain;
 
-class Info extends \PleskX\Api\Struct
+use PleskX\Api\AbstractStruct;
+
+class Info extends AbstractStruct
 {
-    /** @var int */
-    public $id;
+    public int $id;
+    public string $parent;
+    public string $name;
+    public array $properties;
 
-    /** @var string */
-    public $parent;
-
-    /** @var string */
-    public $name;
-
-    /** @var array */
-    public $properties;
-
-    public function __construct($apiResponse)
+    public function __construct(\SimpleXMLElement $apiResponse)
     {
         $this->properties = [];
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             'id',
             'parent',
             'name',
         ]);
-        foreach ($apiResponse->property as $propertyInfo) {
-            $this->properties[(string)$propertyInfo->name] = (string)$propertyInfo->value;
+        foreach ($apiResponse->property ?? [] as $propertyInfo) {
+            $this->properties[(string) $propertyInfo->name] = (string) $propertyInfo->value;
         }
     }
 }

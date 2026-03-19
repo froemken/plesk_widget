@@ -1,11 +1,5 @@
 <?php
-
-/*
- * This file is part of the package stefanfroemken/plesk-widget.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+// Copyright 1999-2025. WebPros International GmbH.
 
 namespace PleskX\Api\Operator;
 
@@ -13,45 +7,43 @@ use PleskX\Api\Struct\Dns as Struct;
 
 class Dns extends \PleskX\Api\Operator
 {
-    /**
-     * @param array $properties
-     *
-     * @return Struct\Info
-     */
-    public function create($properties)
+    public function create(array $properties): Struct\Info
     {
-        $packet = $this->_client->getPacket();
-        $info = $packet->addChild($this->_wrapperTag)->addChild('add_rec');
+        $packet = $this->client->getPacket();
+        $info = $packet->addChild($this->wrapperTag)->addChild('add_rec');
 
         foreach ($properties as $name => $value) {
             $info->{$name} = $value;
         }
 
-        return new Struct\Info($this->_client->request($packet));
+        return new Struct\Info($this->client->request($packet));
     }
 
     /**
      * Send multiply records by one request.
      *
+     * @param array $records
      *
-     * @return \PleskX\Api\XmlResponse[]
+     * @return \SimpleXMLElement[]
      */
-    public function bulkCreate(array $records)
+    public function bulkCreate(array $records): array
     {
-        $packet = $this->_client->getPacket();
+        $packet = $this->client->getPacket();
 
         foreach ($records as $properties) {
-            $info = $packet->addChild($this->_wrapperTag)->addChild('add_rec');
+            $info = $packet->addChild($this->wrapperTag)->addChild('add_rec');
 
             foreach ($properties as $name => $value) {
                 $info->{$name} = $value;
             }
         }
 
-        $response = $this->_client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
+        $response = $this->client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
         $items = [];
-        foreach ($response->xpath('//result') as $xmlResult) {
-            $items[] = $xmlResult;
+        foreach ((array) $response->xpath('//result') as $xmlResult) {
+            if ($xmlResult) {
+                $items[] = $xmlResult;
+            }
         }
 
         return $items;
@@ -63,7 +55,7 @@ class Dns extends \PleskX\Api\Operator
      *
      * @return Struct\Info
      */
-    public function get($field, $value)
+    public function get(string $field, $value): Struct\Info
     {
         $items = $this->getAll($field, $value);
 
@@ -76,22 +68,25 @@ class Dns extends \PleskX\Api\Operator
      *
      * @return Struct\Info[]
      */
-    public function getAll($field, $value)
+    public function getAll(string $field, $value): array
     {
-        $packet = $this->_client->getPacket();
-        $getTag = $packet->addChild($this->_wrapperTag)->addChild('get_rec');
+        $packet = $this->client->getPacket();
+        $getTag = $packet->addChild($this->wrapperTag)->addChild('get_rec');
 
         $filterTag = $getTag->addChild('filter');
-        if (!is_null($field)) {
-            $filterTag->addChild($field, $value);
-        }
+        $filterTag->addChild($field, (string) $value);
 
-        $response = $this->_client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
+        $response = $this->client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
         $items = [];
-        foreach ($response->xpath('//result') as $xmlResult) {
-            $item = new Struct\Info($xmlResult->data);
-            $item->id = (int)$xmlResult->id;
-            $items[] = $item;
+        foreach ((array) $response->xpath('//result') as $xmlResult) {
+            if (!$xmlResult) {
+                continue;
+            }
+            if (!is_null($xmlResult->data)) {
+                $item = new Struct\Info($xmlResult->data);
+                $item->id = (int) $xmlResult->id;
+                $items[] = $item;
+            }
         }
 
         return $items;
@@ -103,30 +98,33 @@ class Dns extends \PleskX\Api\Operator
      *
      * @return bool
      */
-    public function delete($field, $value)
+    public function delete(string $field, $value): bool
     {
-        return $this->_delete($field, $value, 'del_rec');
+        return $this->deleteBy($field, $value, 'del_rec');
     }
 
     /**
      * Delete multiply records by one request.
      *
+     * @param array $recordIds
      *
-     * @return \PleskX\Api\XmlResponse[]
+     * @return \SimpleXMLElement[]
      */
-    public function bulkDelete(array $recordIds)
+    public function bulkDelete(array $recordIds): array
     {
-        $packet = $this->_client->getPacket();
+        $packet = $this->client->getPacket();
 
         foreach ($recordIds as $recordId) {
-            $packet->addChild($this->_wrapperTag)->addChild('del_rec')
+            $packet->addChild($this->wrapperTag)->addChild('del_rec')
                 ->addChild('filter')->addChild('id', $recordId);
         }
 
-        $response = $this->_client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
+        $response = $this->client->request($packet, \PleskX\Api\Client::RESPONSE_FULL);
         $items = [];
-        foreach ($response->xpath('//result') as $xmlResult) {
-            $items[] = $xmlResult;
+        foreach ((array) $response->xpath('//result') as $xmlResult) {
+            if ($xmlResult) {
+                $items[] = $xmlResult;
+            }
         }
 
         return $items;
