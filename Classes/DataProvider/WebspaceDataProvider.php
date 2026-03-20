@@ -48,15 +48,23 @@ readonly class WebspaceDataProvider
                 [
                     'backgroundColor' => WidgetApi::getDefaultChartColors(),
                     'border' => 0,
-                    'data' => $this->getWebSpaceStatus($pleskClient, $widgetContext),
+                    'data' => $this->getWebSpaceStatus($pleskClient, $pleskServerRecord, $widgetContext),
                 ],
             ],
         ];
     }
 
-    private function getWebSpaceStatus(Client $pleskClient, WidgetContext $widgetContext): array
-    {
-        $diskUsage = $this->getDiskUsage($pleskClient);
+    private function getWebSpaceStatus(
+        Client $pleskClient,
+        Record $pleskServerRecord,
+        WidgetContext $widgetContext,
+    ): array {
+        $diskUsage = $this->getDiskUsage($pleskClient, $pleskServerRecord);
+
+        if (!$diskUsage instanceof \PleskX\Api\Struct\Webspace\DiskUsage) {
+            return [];
+        }
+
         $diskSpace = (int)$this->getLimit('disk_space', $pleskClient)->value;
 
         return [
@@ -120,8 +128,27 @@ readonly class WebspaceDataProvider
         return $items[0];
     }
 
-    private function getDiskUsage(Client $pleskClient): \PleskX\Api\Struct\Webspace\DiskUsage
+    private function getDiskUsage(
+        Client $pleskClient,
+        Record $pleskServerRecord,
+    ): ?\PleskX\Api\Struct\Webspace\DiskUsage {
+        $webspace = $this->getFirstAvailableWebspace($pleskClient);
+
+        if ($webspace instanceof \PleskX\Api\Struct\Webspace\GeneralInfo) {
+            return $pleskClient->webspace()->getDiskUsage('id', $webspace->id);
+        }
+
+        return null;
+    }
+
+    private function getFirstAvailableWebspace(Client $pleskClient): ?\PleskX\Api\Struct\Webspace\GeneralInfo
     {
-        return $pleskClient->webspace()->getDiskUsage(null, null);
+        $webspaces = $pleskClient->webspace()->getAll();
+
+        reset($webspaces);
+
+        $firstAvailableWebspace = current($webspaces);
+
+        return $firstAvailableWebspace ?: null;
     }
 }

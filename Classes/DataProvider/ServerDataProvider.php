@@ -13,13 +13,11 @@ namespace StefanFroemken\PleskWidget\DataProvider;
 
 use PleskX\Api\Client;
 use PleskX\Api\Struct\Customer\GeneralInfo;
-use StefanFroemken\PleskWidget\Configuration\ExtConf;
+use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ServerDataProvider
 {
-    public function __construct(private readonly ExtConf $extConf) {}
-
     public function getCustomer(Client $pleskClient): GeneralInfo
     {
         $customers = $pleskClient->customer()->getAll();
@@ -27,8 +25,11 @@ class ServerDataProvider
         return current($customers);
     }
 
-    public function getLoginLink(Client $pleskClient, string $externalIpAddress): string
-    {
+    public function getLoginLink(
+        Client $pleskClient,
+        Record $pleskServerRecord,
+        string $externalIpAddress,
+    ): string {
         if (GeneralUtility::validIP($externalIpAddress)) {
             // Return direct login link
             return sprintf(
@@ -37,7 +38,7 @@ class ServerDataProvider
                 $pleskClient->getHost(),
                 $pleskClient->getPort(),
                 $pleskClient->server()->createSession(
-                    $this->extConf->getUsername(),
+                    $pleskServerRecord->get('username'),
                     $externalIpAddress
                 ),
                 '/smb/web/view'

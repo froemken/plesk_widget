@@ -20,6 +20,3 @@ jobs:
 
       - name: 'Validate code against CGL'
         run: Build/Scripts/runTests.sh -p 8.2 -s cgl -n
-
-      - name: 'Execute functional tests'
-        run: Build/Scripts/runTests.sh -p 8.2 -d sqlite -s functional

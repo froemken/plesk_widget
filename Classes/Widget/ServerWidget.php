@@ -12,16 +12,16 @@ declare(strict_types=1);
 namespace StefanFroemken\PleskWidget\Widget;
 
 use PleskX\Api\Client;
-use Psr\Http\Message\ServerRequestInterface;
 use StefanFroemken\PleskWidget\Client\ExtensionSettingException;
 use StefanFroemken\PleskWidget\Client\PleskClientFactory;
-use StefanFroemken\PleskWidget\Configuration\ExtConf;
 use StefanFroemken\PleskWidget\DataProvider\ServerDataProvider;
+use StefanFroemken\PleskWidget\Service\PleskServerRecordService;
 use StefanFroemken\PleskWidget\Service\PleskSiteService;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Core\Domain\Record;
+use TYPO3\CMS\Core\Settings\SettingDefinition;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Dashboard\Widgets\Provider\ButtonProvider;
-use TYPO3\CMS\Dashboard\Widgets\RequestAwareWidgetInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetConfigurationInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetContext;
 use TYPO3\CMS\Dashboard\Widgets\WidgetRendererInterface;
@@ -29,11 +29,10 @@ use TYPO3\CMS\Dashboard\Widgets\WidgetResult;
 
 class ServerWidget implements WidgetRendererInterface
 {
-    private ServerRequestInterface $request;
-
     public function __construct(
         private readonly WidgetConfigurationInterface $configuration,
         private readonly BackendViewFactory $backendViewFactory,
+        private readonly PleskServerRecordService $pleskServerRecordService,
         private readonly ServerDataProvider $dataProvider,
         private readonly PleskClientFactory $pleskClientFactory,
         private readonly PleskSiteService $pleskSiteService,
@@ -41,7 +40,16 @@ class ServerWidget implements WidgetRendererInterface
 
     public function getSettingsDefinitions(): array
     {
-        return [];
+        return [
+            new SettingDefinition(
+                key: 'pleskServer',
+                type: 'int',
+                default: 0,
+                label: 'plesk_widget.widget:pleskServer',
+                description: 'plesk_widget.widget:pleskServer.description',
+                enum: $this->pleskServerRecordService->getPleskServerRecordsEnum(),
+            ),
+        ];
     }
 
     public function renderWidget(WidgetContext $context): WidgetResult
@@ -50,25 +58,38 @@ class ServerWidget implements WidgetRendererInterface
 
         $variables = [
             'configuration' => $context->configuration,
+            'error' => '',
         ];
 
-        try {
-            $pleskClient = $this->pleskClientFactory->create();
-            $externalIpAddress = $this->getExternalIpAddress();
+        $pleskServerRecordUid = (int)$context->settings->get('pleskServer');
 
-            $variables['customer'] = $this->dataProvider->getCustomer($pleskClient);
-            $variables['externalIpAddress'] = $externalIpAddress;
-            $variables['button'] = $this->getButtonProvider($pleskClient, $externalIpAddress);
+        if ($pleskServerRecordUid === 0) {
+            $variables['error'] = 'Please use the configuration icon to select a Plesk server record '
+                . 'created on the TYPO3 root page (ID 0).';
+        } elseif (
+            ($pleskServerRecord = $this->pleskServerRecordService->getPleskServerRecord($pleskServerRecordUid))
+            && !$pleskServerRecord instanceof Record
+        ) {
+            $variables['error'] = 'The selected Plesk server record (ID: ' . $pleskServerRecordUid . ') was not found.';
+        } else {
+            try {
+                $pleskClient = $this->pleskClientFactory->create($pleskServerRecord);
+                $externalIpAddress = $this->getExternalIpAddress();
 
-            if (
-                ($domain = $this->extConf->getDomain())
-                && ($site = $this->pleskSiteService->getSiteByName($domain, $pleskClient))
-                && $ipAddresses = $site->getHosting()->getIpAddresses()
-            ) {
-                $variables['ipAddresses'] = $ipAddresses;
+                $variables['customer'] = $this->dataProvider->getCustomer($pleskClient);
+                $variables['externalIpAddress'] = $externalIpAddress;
+                $variables['button'] = $this->getButtonProvider($pleskClient, $pleskServerRecord, $externalIpAddress);
+
+                if (
+                    ($domain = $pleskServerRecord->get('domain'))
+                    && ($site = $this->pleskSiteService->getSiteByName($domain, $pleskClient))
+                    && $ipAddresses = $site->getHosting()->getIpAddresses()
+                ) {
+                    $variables['ipAddresses'] = $ipAddresses;
+                }
+            } catch (ExtensionSettingException $extensionSettingException) {
+                $variables['error'] = $extensionSettingException->getMessage();
             }
-        } catch (ExtensionSettingException $extensionSettingException) {
-            $variables['error'] = $extensionSettingException->getMessage();
         }
 
         $view->assignMultiple($variables);
@@ -80,12 +101,15 @@ class ServerWidget implements WidgetRendererInterface
         );
     }
 
-    protected function getButtonProvider(Client $pleskClient, string $externalIpAddress): ButtonProvider
-    {
+    protected function getButtonProvider(
+        Client $pleskClient,
+        Record $pleskServerRecord,
+        string $externalIpAddress,
+    ): ButtonProvider {
         return GeneralUtility::makeInstance(
             ButtonProvider::class,
             'Login to Plesk',
-            $this->dataProvider->getLoginLink($pleskClient, $externalIpAddress),
+            $this->dataProvider->getLoginLink($pleskClient, $pleskServerRecord, $externalIpAddress),
             '_blank'
         );
     }

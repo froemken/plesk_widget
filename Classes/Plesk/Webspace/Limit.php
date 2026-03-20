@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace StefanFroemken\PleskWidget\Plesk\Webspace;
 
-class Limit extends \PleskX\Api\Struct
+class Limit extends \PleskX\Api\AbstractStruct
 {
     /** @var string */
     public $name;
@@ -21,7 +21,7 @@ class Limit extends \PleskX\Api\Struct
 
     public function __construct($apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, [
+        $this->initScalarProperties($apiResponse, [
             'name',
             'value',
         ]);

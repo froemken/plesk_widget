@@ -13,8 +13,11 @@ namespace StefanFroemken\PleskWidget\Widget;
 
 use StefanFroemken\PleskWidget\Client\ExtensionSettingException;
 use StefanFroemken\PleskWidget\Client\PleskClientFactory;
+use StefanFroemken\PleskWidget\Service\PleskServerRecordService;
 use StefanFroemken\PleskWidget\Service\PleskSiteService;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Core\Domain\Record;
+use TYPO3\CMS\Core\Settings\SettingDefinition;
 use TYPO3\CMS\Dashboard\Widgets\WidgetConfigurationInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetContext;
 use TYPO3\CMS\Dashboard\Widgets\WidgetRendererInterface;
@@ -25,13 +28,23 @@ class PhpWidget implements WidgetRendererInterface
     public function __construct(
         private readonly WidgetConfigurationInterface $configuration,
         private readonly BackendViewFactory $backendViewFactory,
+        private readonly PleskServerRecordService $pleskServerRecordService,
         private readonly PleskClientFactory $pleskClientFactory,
         private readonly PleskSiteService $pleskSiteService,
     ) {}
 
     public function getSettingsDefinitions(): array
     {
-        return [];
+        return [
+            new SettingDefinition(
+                key: 'pleskServer',
+                type: 'int',
+                default: 0,
+                label: 'plesk_widget.widget:pleskServer',
+                description: 'plesk_widget.widget:pleskServer.description',
+                enum: $this->pleskServerRecordService->getPleskServerRecordsEnum(),
+            ),
+        ];
     }
 
     public function renderWidget(WidgetContext $context): WidgetResult
@@ -40,22 +53,35 @@ class PhpWidget implements WidgetRendererInterface
 
         $variables = [
             'configuration' => $context->configuration,
+            'error' => '',
         ];
 
-        try {
-            $pleskClient = $this->pleskClientFactory->create();
-            $domain = $this->extConf->getDomain();
+        $pleskServerRecordUid = (int)$context->settings->get('pleskServer');
 
-            if ($domain === '') {
-                $variables['error'] = 'You have to select a domain name in extension settings of EXT:plesk-widget.';
-            } elseif ($site = $this->pleskSiteService->getSiteByName($domain, $pleskClient)) {
-                $variables['domain'] = $domain;
-                $variables['hosting'] = $site->getHosting();
-            } else {
-                $variables['error'] = 'Plesk API can not retrieve domain information for ' . $domain;
+        if ($pleskServerRecordUid === 0) {
+            $variables['error'] = 'Please use the configuration icon to select a Plesk server record '
+                . 'created on the TYPO3 root page (ID 0).';
+        } elseif (
+            ($pleskServerRecord = $this->pleskServerRecordService->getPleskServerRecord($pleskServerRecordUid))
+            && !$pleskServerRecord instanceof Record
+        ) {
+            $variables['error'] = 'The selected Plesk server record (ID: ' . $pleskServerRecordUid . ') was not found.';
+        } else {
+            try {
+                $pleskClient = $this->pleskClientFactory->create($pleskServerRecord);
+                $domain = $pleskServerRecord->get('domain');
+
+                if ($domain === '') {
+                    $variables['error'] = 'You have to select a domain name in extension settings of EXT:plesk-widget.';
+                } elseif ($site = $this->pleskSiteService->getSiteByName($domain, $pleskClient)) {
+                    $variables['domain'] = $domain;
+                    $variables['hosting'] = $site->getHosting();
+                } else {
+                    $variables['error'] = 'Plesk API can not retrieve domain information for ' . $domain;
+                }
+            } catch (ExtensionSettingException $extensionSettingException) {
+                $variables['error'] = $extensionSettingException->getMessage();
             }
-        } catch (ExtensionSettingException $extensionSettingException) {
-            $variables['error'] = $extensionSettingException->getMessage();
         }
 
         $view->assignMultiple($variables);

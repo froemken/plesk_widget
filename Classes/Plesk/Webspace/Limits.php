@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace StefanFroemken\PleskWidget\Plesk\Webspace;
 
-class Limits extends \PleskX\Api\Struct
+class Limits extends \PleskX\Api\AbstractStruct
 {
     /** @var string */
     public $overuse;
@@ -21,7 +21,7 @@ class Limits extends \PleskX\Api\Struct
 
     public function __construct($apiResponse)
     {
-        $this->_initScalarProperties($apiResponse, ['overuse']);
+        $this->initScalarProperties($apiResponse, ['overuse']);
         $this->limits = [];
 
         foreach ($apiResponse->limit as $limit) {
