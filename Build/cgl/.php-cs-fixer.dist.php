@@ -176,7 +176,7 @@ return (new \PhpCsFixer\Config())
     ->setFinder(
         (new PhpCsFixer\Finder())
             ->ignoreVCSIgnored(true)
-            ->in(realpath(__DIR__ . '/../../Source/Extension'))
+            ->in(realpath(__DIR__ . '/'))
     )
     ->setRiskyAllowed(true)
     ->setRules($mergedRules);
