@@ -39,10 +39,10 @@ nbproject
 bin/*
 vendor/*
 .build
-.php_cs.cache
 composer.lock
 
 # Ignore testing stuff
 /.Build
+/Resources/Private/Php
 /composer.json.orig
 /composer.json.testing
