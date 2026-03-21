@@ -12,5 +12,14 @@ declare(strict_types=1);
 defined('TYPO3') or die();
 
 use StefanFroemken\PleskWidget\Hook\DataHandlerHook;
+use StefanFroemken\PleskWidget\PasswordPolicy\Validator\PleskPasswordValidator;
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamap_postProcessFieldArray'][] = DataHandlerHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['pleskWidgetEncryptPassword'] = DataHandlerHook::class;
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['passwordPolicies']['plesk-widget'] = [
+    'validators' => [
+        PleskPasswordValidator::class => [
+            'options' => [],
+        ],
+    ],
+];

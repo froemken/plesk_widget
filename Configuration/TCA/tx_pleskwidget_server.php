@@ -109,8 +109,16 @@ return [
                 'type' => 'password',
                 'hashed' => false,
                 'required' => true,
-                'max' => 255,
-                'autocomplete' => true,
+                // This field stores encrypted data using TYPO3's CipherService (XChaCha20-Poly1305).
+                // The 'plesk-widget' passwordPolicy (defined in ext_localconf.php) is applied via the
+                // DataHandlerHook (processDatamap_preProcessFieldArray) and limits the plaintext input
+                // to a maximum of 64 characters. Encryption happens in processDatamap_postProcessFieldArray.
+                // The actual database column size must accommodate the encrypted output, which includes
+                // the plaintext, a 24-byte nonce, a 16-byte authentication tag, and Base64 encoding overhead.
+                // For a 64-character plaintext input, the encrypted string is approximately 140 characters long.
+                // The database column (e.g., VARCHAR(255)) is sized to safely store this encrypted value.
+                'passwordPolicy' => 'plesk-widget',
+                'autocomplete' => false,
             ],
         ],
         'domain' => [

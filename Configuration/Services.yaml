@@ -48,3 +48,6 @@ services:
   StefanFroemken\PleskWidget\Service\PleskSiteService:
     arguments:
       $cache: '@cache.runtime'
+
+  StefanFroemken\PleskWidget\Hook\DataHandlerHook:
+    public: true

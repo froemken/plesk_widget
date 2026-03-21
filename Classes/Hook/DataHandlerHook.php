@@ -11,11 +11,20 @@ declare(strict_types=1);
 
 namespace StefanFroemken\PleskWidget\Hook;
 
+use StefanFroemken\PleskWidget\PasswordPolicy\Validator\PleskPasswordValidator;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Crypto\Cipher\CipherService;
 use TYPO3\CMS\Core\Crypto\Cipher\KeyFactory;
-use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\PasswordPolicy\PasswordPolicyAction;
+use TYPO3\CMS\Core\PasswordPolicy\PasswordPolicyValidator;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final readonly class DataHandlerHook
 {
@@ -26,20 +35,58 @@ final readonly class DataHandlerHook
     public function __construct(
         private CipherService $cipherService,
         private KeyFactory $keyFactory,
-        private ConnectionPool $connectionPool,
+        private FlashMessageService $flashMessageService,
+        private LanguageServiceFactory $languageServiceFactory,
+        private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
+
+    public function processDatamap_preProcessFieldArray(
+        array &$incomingFieldArray,
+        string $table,
+        int|string $id,
+        DataHandler $dataHandler
+    ): void {
+        if ($table !== self::TABLE || !isset($incomingFieldArray['password'])) {
+            return;
+        }
+
+        $tcaFieldConf = $this->getTcaConfigurationForField(
+            self::TABLE,
+            'password',
+            $incomingFieldArray,
+        );
+
+        $passwordPolicy = $tcaFieldConf['passwordPolicy'] ?? '';
+        $passwordPolicyValidator = GeneralUtility::makeInstance(
+            PasswordPolicyValidator::class,
+            PasswordPolicyAction::NEW_USER_PASSWORD,
+            is_string($passwordPolicy) ? $passwordPolicy : '',
+        );
+
+        if (!$passwordPolicyValidator->isValidPassword($incomingFieldArray['password'])) {
+            $defaultFlashMessageQueue = $this->flashMessageService->getMessageQueueByIdentifier();
+            $defaultFlashMessageQueue->enqueue($this->getErrorFlashMessage(
+                sprintf(
+                    $this->getLanguageService()->sL('plesk_widget.password_policy:error.maximumLength'),
+                    PleskPasswordValidator::MAX_PASSWORD_LENGTH,
+                ),
+            ));
+
+            $incomingFieldArray = null;
+        }
+    }
 
     /**
      * Encrypt password before storing it to the database.
      */
     public function processDatamap_postProcessFieldArray(
-        string $status,
+        string $cmd,
         string $table,
         int|string $id,
-        array &$fieldArray,
+        bool|null|array &$fieldArray,
         DataHandler $dataHandler,
     ): void {
-        if ($table !== self::TABLE || !isset($fieldArray['password'])) {
+        if (!is_array($fieldArray) || $table !== self::TABLE || !isset($fieldArray['password'])) {
             return;
         }
 
@@ -48,19 +95,7 @@ final readonly class DataHandlerHook
             return;
         }
 
-        // For new records, always encrypt
-        if ($status === 'new') {
-            $fieldArray['password'] = $this->encrypt($newPassword);
-            return;
-        }
-
-        // For existing records, check if the password has changed.
-        // If the user didn't change the password in the form, the encrypted value from the DB
-        // is sent back. Comparing it with the DB value avoids double encryption.
-        $currentPassword = $this->getCurrentPassword((int)$id);
-        if ($newPassword !== $currentPassword) {
-            $fieldArray['password'] = $this->encrypt($newPassword);
-        }
+        $fieldArray['password'] = $this->encrypt($newPassword);
     }
 
     private function encrypt(string $password): string
@@ -70,21 +105,37 @@ final readonly class DataHandlerHook
         return (string)$this->cipherService->encrypt($password, $key);
     }
 
-    private function getCurrentPassword(int $uid): string
+    private function getErrorFlashMessage(string $message): FlashMessage
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
-        $result = $queryBuilder
-            ->select('password')
-            ->from(self::TABLE)
-            ->where(
-                $queryBuilder->expr()->eq(
-                    'uid',
-                    $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT),
-                )
-            )
-            ->executeQuery()
-            ->fetchOne();
+        return GeneralUtility::makeInstance(
+            FlashMessage::class,
+            $message,
+            '',
+            ContextualFeedbackSeverity::ERROR,
+            true,
+        );
+    }
 
-        return (string)$result;
+    private function getLanguageService(): LanguageService
+    {
+        if (($GLOBALS['LANG'] ?? null) instanceof LanguageService) {
+            return $GLOBALS['LANG'];
+        }
+
+        return $this->languageServiceFactory->createFromUserPreferences($GLOBALS['BE_USER'] ?? null);
+    }
+
+    private function getTcaConfigurationForField(
+        string $table,
+        string $field,
+        array $currentRecord,
+    ): array {
+        $schema = $this->tcaSchemaFactory->get($table);
+        $recordType = BackendUtility::getTCAtypeValue($table, $currentRecord);
+        if ($schema->hasSubSchema($recordType) && $schema->getSubSchema($recordType)->hasField($field)) {
+            return $schema->getSubSchema($recordType)->getField($field)->getConfiguration();
+        }
+
+        return $schema->getField($field)->getConfiguration();
     }
 }
