@@ -179,6 +179,8 @@ return (new \PhpCsFixer\Config())
             ->in([
                 __DIR__ . '/../..',
             ])
+            ->exclude('Resources/Private/Php')
+            ->exclude('Build')
     )
     ->setRiskyAllowed(true)
     ->setRules($mergedRules);
