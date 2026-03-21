@@ -14,14 +14,20 @@ namespace StefanFroemken\PleskWidget\Client;
 use PleskX\Api\Client;
 use Psr\Log\LoggerInterface;
 use StefanFroemken\PleskWidget\Service\PleskServerRecordService;
+use TYPO3\CMS\Core\Crypto\Cipher\CipherService;
+use TYPO3\CMS\Core\Crypto\Cipher\KeyFactory;
 use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
 readonly class PleskClientFactory
 {
+    private const CONTEXT = 'plesk_widget_password';
+
     public function __construct(
         private PleskServerRecordService $pleskServerRecordService,
         private LoggerInterface $logger,
+        private CipherService $cipherService,
+        private KeyFactory $keyFactory,
     ) {}
 
     /**
@@ -36,13 +42,25 @@ readonly class PleskClientFactory
             );
         }
 
+        $password = $record->get('password');
+        if ($password !== '') {
+            try {
+                $key = $this->keyFactory->deriveKeyFromEncryptionKey(self::CONTEXT);
+                $password = $this->cipherService->decrypt($password, $key);
+            } catch (\Exception $e) {
+                // If decryption fails, we assume the password is still in plain text
+                // (e.g. for records created before this feature was introduced).
+                $this->logger->debug('Failed to decrypt Plesk password: ' . $e->getMessage());
+            }
+        }
+
         $pleskClient = new Client(
             $record->get('host'),
             (int)$record->get('port'),
         );
         $pleskClient->setCredentials(
             $record->get('username'),
-            $record->get('password'),
+            $password,
         );
 
         return $pleskClient;

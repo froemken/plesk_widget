@@ -106,9 +106,11 @@ return [
             'label' => 'plesk_widget.db:password',
             'description' => 'plesk_widget.db:password.description',
             'config' => [
-                'type' => 'input',
+                'type' => 'password',
+                'hashed' => false,
                 'required' => true,
                 'max' => 255,
+                'autocomplete' => true,
             ],
         ],
         'domain' => [
