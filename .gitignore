@@ -43,6 +43,5 @@ composer.lock
 
 # Ignore testing stuff
 /.Build
-/Resources/Private/Php
 /composer.json.orig
 /composer.json.testing
