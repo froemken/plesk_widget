@@ -20,6 +20,7 @@ This document defines the technical standards and architectural constraints for 
 - **Strict Typing:** Always use `declare(strict_types=1);`. Ensure exactly one empty line between the PHP opening tag and the declare statement.
 - **Line Length:** Target ~130 characters.
 - **Whitespace:** Never use two consecutive empty lines.
+- **Formatting:** Refer to the root `.editorconfig` file for proper indentation, charset, and other formatting rules specific to different file formats.
 - **Naming:**
     - Classes: `UpperCamelCase`.
     - Methods/Variables: `lowerCamelCase`.
