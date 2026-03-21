@@ -1,2 +1,0 @@
-# cat=view; type=options[Percent (%)=%,MegaByte (MB)=MB,GigaByte (GB)=GB]; label=Disk usage type: Show disk usage in percent or in Mega- or GigaByte?
-diskUsageType = %
