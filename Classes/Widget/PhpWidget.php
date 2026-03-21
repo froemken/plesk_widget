@@ -23,14 +23,14 @@ use TYPO3\CMS\Dashboard\Widgets\WidgetContext;
 use TYPO3\CMS\Dashboard\Widgets\WidgetRendererInterface;
 use TYPO3\CMS\Dashboard\Widgets\WidgetResult;
 
-class PhpWidget implements WidgetRendererInterface
+readonly class PhpWidget implements WidgetRendererInterface
 {
     public function __construct(
-        private readonly WidgetConfigurationInterface $configuration,
-        private readonly BackendViewFactory $backendViewFactory,
-        private readonly PleskServerRecordService $pleskServerRecordService,
-        private readonly PleskClientFactory $pleskClientFactory,
-        private readonly PleskSiteService $pleskSiteService,
+        private WidgetConfigurationInterface $configuration,
+        private BackendViewFactory $backendViewFactory,
+        private PleskServerRecordService $pleskServerRecordService,
+        private PleskClientFactory $pleskClientFactory,
+        private PleskSiteService $pleskSiteService,
     ) {}
 
     public function getSettingsDefinitions(): array
