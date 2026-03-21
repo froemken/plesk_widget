@@ -39,9 +39,9 @@ class ServerDataProvider
                 $pleskClient->getPort(),
                 $pleskClient->server()->createSession(
                     $pleskServerRecord->get('username'),
-                    $externalIpAddress
+                    $externalIpAddress,
                 ),
-                '/smb/web/view'
+                '/smb/web/view',
             );
         }
 
@@ -50,7 +50,7 @@ class ServerDataProvider
             '%s://%s:%d',
             $pleskClient->getProtocol() ?: 'https',
             $pleskClient->getHost(),
-            $pleskClient->getPort()
+            $pleskClient->getPort(),
         );
     }
 }

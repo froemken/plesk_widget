@@ -48,7 +48,7 @@ final readonly class DataHandlerHook
         array &$incomingFieldArray,
         string $table,
         int|string $id,
-        DataHandler $dataHandler
+        DataHandler $dataHandler,
     ): void {
         if ($table !== self::TABLE || !isset($incomingFieldArray['password'])) {
             return;
