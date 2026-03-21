@@ -6,6 +6,15 @@
 ChangeLog
 =========
 
+**Version 3.0.1**
+
+*   Add builder pattern for ExtConf
+*   Add functial tests for ExtConf
+
+**Version 3.0.0**
+
+*   Add TYPO3 13 compatibility
+
 **Version 2.0.1**
 
 *   Update documentation
