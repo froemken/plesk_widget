@@ -6,78 +6,90 @@
 Configuration
 =============
 
-Extension Settings Reference
-============================
+Configuring Plesk Server Access
+===============================
 
-Jump over to the BE module :guilabel:`Settings`, type in your InstallTool
-password and click on :guilabel:`Configure extensions`. Than choose
-**plesk_widget**.
+The `plesk_widget` extension uses dedicated records to store Plesk server
+access information. This allows you to configure multiple Plesk servers and
+select them individually for your dashboard widgets.
 
-..  confval-menu::
-    :name: input
-    :display: table
-    :type:
+To configure a Plesk server:
 
-..  _host:
+1.  Navigate to the TYPO3 backend module :guilabel:`Records` to manage your
+    records.
+    These records (type `Plesk Server`) can only be created on the root page
+    (PID 0) and are therefore only manageable by a TYPO3 administrator.
+2.  Create a new record of type :guilabel:`Plesk Server`.
+3.  Fill in the following fields:
 
-..  confval:: host
-    :name: configuration-host
-    :type: string
-    :Required: true
+    ..  confval:: title
+        :name: configuration-title
+        :type: string
+        :Required: true
 
-    Enter the host, where this extension can access the plesk system.
-    Plesk check mails of your hoster to find this domain name. If not known
-    you may try your website domain name (without scheme, path and port).
+        A descriptive title for this Plesk server configuration. This title
+        will be displayed when selecting the server in dashboard widgets.
 
-    **Example**: plesk.example.com
+        **Example**: My Main Plesk Server
 
-..  confval:: port
-    :name: configuration-port
-    :type: int
-    :default: 8443
-    :Required: true
+    ..  confval:: host
+        :name: configuration-host
+        :type: string
+        :Required: true
 
-    Enter the port of your plesk domain (see domain above).
+        Enter the hostname or IP address where this extension can access the Plesk system.
+        If not known, you may try your website domain name (without scheme, path, and port).
 
-    **Example**: 8083
+        **Example**: plesk.example.com or 192.168.1.100
 
-..  confval:: username
-    :name: configuration-username
-    :type: string
-    :Required: true
+    ..  confval:: port
+        :name: configuration-port
+        :type: int
+        :default: 8443
+        :Required: true
 
-    Set the username of your customer account on the plesk system.
+        Enter the port of your Plesk system.
 
-    **Example**: max.mustermann
+        **Example**: 8443
 
-..  confval:: password
-    :name: configuration-password
-    :type: string
-    :Required: true
+    ..  confval:: username
+        :name: configuration-username
+        :type: string
+        :Required: true
 
-    Set the password of your customer account on the plesk system.
+        Set the username of your customer account on the Plesk system.
 
-    **Example**: Password%1234
+        **Example**: max.mustermann
 
-..  confval:: diskUsageType
-    :name: configuration-diskUsageType
-    :type: string
-    :Default: %
-    :Required: true
+    ..  confval:: password
+        :name: configuration-password
+        :type: string
+        :Required: true
 
-    You have the possibility to show the disk usage in percent (%),
-    MegaByte (MB) or in GigaByte (GB).
+        Set the password of your customer account on the Plesk system. This password
+        is stored encrypted.
+
+    ..  confval:: domain
+        :name: configuration-domain
+        :type: string
+        :Required: false
+
+        If you want to use the dashboard widget that displays PHP settings, you must
+        set this value to the exact domain name as it is registered in your customer
+        account of the Plesk server.
+
+        **Example**: 124.example.com
+
+Configuring Dashboard Widgets
+=============================
+
+When adding or editing a `plesk_widget` dashboard widget, you will be prompted
+to select one of your configured Plesk Server records.
+
+Additionally, for widgets displaying disk usage, you can now specify the
+display format directly within the widget's settings:
+
+*   **Disk Usage Type:** Choose whether to display disk usage in percent (%),
+    MegaByte (MB), or GigaByte (GB). This setting is specific to each widget.
 
     **Example**: MB
-
-..  confval:: domain
-    :name: configuration-domain
-    :type: string
-    :Required: false
-
-    EXT:plesk_widget comes with a dashboard widget where you can view PHP
-    settings of one of your registered domains at plesk server. If you
-    make use of it, you have to set this value to the exact domain name as it
-    is registered in your customer account of the plesk server.
-
-    **Example**: 124.example.com
