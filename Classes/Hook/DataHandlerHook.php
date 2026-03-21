@@ -28,8 +28,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final readonly class DataHandlerHook
 {
-    private const ENCRYPTION_SEED = 'plesk_widget_password';
-
     private const TABLE = 'tx_pleskwidget_server';
 
     public function __construct(
@@ -100,7 +98,7 @@ final readonly class DataHandlerHook
 
     private function encrypt(string $password): string
     {
-        $key = $this->keyFactory->deriveSharedKeyFromEncryptionKey(self::ENCRYPTION_SEED);
+        $key = $this->keyFactory->deriveSharedKeyFromEncryptionKey(PleskPasswordValidator::ENCRYPTION_SEED);
 
         return (string)$this->cipherService->encrypt($password, $key);
     }

@@ -16,7 +16,9 @@ use TYPO3\CMS\Core\PasswordPolicy\Validator\Dto\ContextData;
 
 class PleskPasswordValidator extends AbstractPasswordValidator
 {
-    public const MAX_PASSWORD_LENGTH = 5;
+    public const ENCRYPTION_SEED = 'plesk_widget_password';
+
+    public const MAX_PASSWORD_LENGTH = 64;
 
     public function validate(string $password, ?ContextData $contextData = null): bool
     {
@@ -44,7 +46,7 @@ class PleskPasswordValidator extends AbstractPasswordValidator
         $this->addRequirement(
             'maximumLength',
             sprintf(
-                $lang->sL('plesk_widget.password_policy:error.maximumLength'),
+                $lang->sL('plesk_widget.password_policy:requirement.maximumLength'),
                 self::MAX_PASSWORD_LENGTH,
             ),
         );
