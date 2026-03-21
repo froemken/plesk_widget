@@ -38,11 +38,6 @@
 			"PleskX\\": "Resources/Private/Php/plesk/api-php-lib/src"
 		}
 	},
-	"autoload-dev": {
-		"psr-4": {
-			"StefanFroemken\\PleskWidget\\Tests\\": "Tests"
-		}
-	},
 	"config": {
 		"sort-packages": true,
 		"vendor-dir": ".Build/vendor",
