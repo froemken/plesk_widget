@@ -38,6 +38,12 @@ final readonly class DataHandlerHook
         private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
+    /**
+     * Validates the password field before a record is processed.
+     * If the password validation fails, the record saving is aborted by setting
+     * the incomingFieldArray to null. Consequently, the encryption in
+     * processDatamap_postProcessFieldArray is not triggered.
+     */
     public function processDatamap_preProcessFieldArray(
         array &$incomingFieldArray,
         string $table,
