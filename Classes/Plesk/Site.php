@@ -52,7 +52,7 @@ class Site
 
         return new Hosting(
             $response->data->hosting->vrt_hst->ip_address,
-            $response->data->hosting->vrt_hst->property
+            $response->data->hosting->vrt_hst->property,
         );
     }
 }

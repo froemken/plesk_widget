@@ -110,7 +110,7 @@ class ServerWidget implements WidgetRendererInterface
             ButtonProvider::class,
             'Login to Plesk',
             $this->dataProvider->getLoginLink($pleskClient, $pleskServerRecord, $externalIpAddress),
-            '_blank'
+            '_blank',
         );
     }
 

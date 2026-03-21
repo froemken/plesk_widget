@@ -31,7 +31,7 @@ class PleskPasswordValidator extends AbstractPasswordValidator
                 sprintf(
                     $lang->sL('plesk_widget.password_policy:error.maximumLength'),
                     self::MAX_PASSWORD_LENGTH,
-                )
+                ),
             );
             $isValid = false;
         }
